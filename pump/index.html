@@ -75,6 +75,22 @@ a{color:inherit}
   100%{box-shadow:inset 0 0 0 0 rgba(220,38,38,0);background:var(--card)}
 }
 
+.bal-sol{font-weight:800;font-size:clamp(40px, 15vw, 64px);line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.bal-usd{font-weight:700;font-size:clamp(16px, 5vw, 22px);margin-top:6px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#333}
+.bal-sol.pos,.bal-usd.pos{color:var(--green)}
+.bal-sol.neg,.bal-usd.neg{color:var(--red)}
+.pnl-under{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.pnl-under .pnl-kicker{margin-bottom:4px}
+.pnl-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px}
+.pnl-usd-sm{font-weight:800;font-size:clamp(20px, 6.4vw, 28px);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.pnl-sol-sm{font-weight:700;font-size:clamp(13px, 3.8vw, 16px);font-variant-numeric:tabular-nums}
+
+.eq-meta{font-size:10px;color:var(--muted);margin:-2px 0 8px;font-variant-numeric:tabular-nums;min-height:14px}
+.eq-chart-wrap{position:relative;height:168px;margin:0 -2px -2px}
+.eq-chart-wrap svg{width:100%;height:100%;display:block;overflow:visible}
+.eq-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;pointer-events:none}
+.eq-empty[hidden]{display:none!important}
+
 .tabs{display:flex;gap:4px}
 .tabs button{font:inherit;font-size:9px;letter-spacing:.08em;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 7px;color:#666;cursor:pointer}
 .tabs button.on{background:#111;color:#fff;border-color:#111}
@@ -154,12 +170,25 @@ a{color:inherit}
     </header>
 
     <section class="card pnl-hero" id="pnl-hero" aria-live="polite">
-      <div class="pnl-kicker">Paper P&amp;L</div>
-      <div class="pnl-total" id="pnl-total">
-        <div class="pnl-usd flat" id="pnl-usd">—</div>
-        <div class="pnl-sol flat" id="pnl-sol">—</div>
+      <div class="pnl-kicker">Total balance</div>
+      <div class="bal-sol flat" id="bal-sol">—</div>
+      <div class="bal-usd flat" id="bal-usd">—</div>
+      <div class="pnl-under">
+        <div class="pnl-kicker">Paper P&amp;L</div>
+        <div class="pnl-line">
+          <span class="pnl-usd-sm flat" id="pnl-usd">—</span>
+          <span class="pnl-sol-sm flat" id="pnl-sol">—</span>
+        </div>
       </div>
       <div class="pnl-grid">
+        <div>
+          <div class="pnl-lab">Cash</div>
+          <div id="pnl-cash">—</div>
+        </div>
+        <div>
+          <div class="pnl-lab">Open value</div>
+          <div id="pnl-value">—</div>
+        </div>
         <div>
           <div class="pnl-lab">Open unrealized</div>
           <div id="pnl-open">—</div>
@@ -168,16 +197,24 @@ a{color:inherit}
           <div class="pnl-lab">Realized</div>
           <div id="pnl-real">—</div>
         </div>
-        <div>
-          <div class="pnl-lab">SOL invested</div>
-          <div id="pnl-invested">—</div>
-        </div>
-        <div>
-          <div class="pnl-lab">Portfolio value</div>
-          <div id="pnl-value">—</div>
-        </div>
       </div>
       <div class="pnl-fresh" id="pnl-fresh">waiting for live prices…</div>
+    </section>
+
+    <section class="card" id="equity-card">
+      <div class="chead">
+        <span class="lbl">Equity curve</span>
+        <div class="tabs" id="equity-range">
+          <button type="button" data-eq="1H">1H</button>
+          <button type="button" data-eq="1D">1D</button>
+          <button type="button" data-eq="ALL" class="on">ALL</button>
+        </div>
+      </div>
+      <div class="eq-meta" id="eq-meta"></div>
+      <div class="eq-chart-wrap">
+        <svg id="eq-chart" role="img" aria-label="Paper equity curve" viewBox="0 0 390 168" preserveAspectRatio="none"></svg>
+        <div class="eq-empty" id="eq-empty" hidden>waiting for the first point…</div>
+      </div>
     </section>
 
     <section class="card" id="paper">
@@ -225,7 +262,11 @@ a{color:inherit}
 (function () {
   "use strict";
 
-  var POLL_MS = 8000;
+  var POLL_MS = 8000;      // launch/rug feeds
+  var PRICE_MS = 1000;     // book prices, balance, P&L, curve
+  var FALLBACK_MS = 10000; // per-mint pumpfun fallback / cache
+  var EQUITY_CAP = 2000;
+  var EQUITY_LS = "pump-desk-equity-v1";
   var GRAD_USD = 69000; // standard pump.fun bonding-curve graduation (~85 SOL)
   var NEAR_PCT = 50;
   var LIQ_MIN = 300000; // desk rule for graduated coins
@@ -239,16 +280,22 @@ a{color:inherit}
   var RUG = "https://api.rugcheck.xyz/v1/tokens/";
 
   var feedMode = "newest";
-  var book = { trades: [], solHint: 70.33 };
+  var book = { trades: [], solHint: 70.33, cashSol: null, equityHistory: [] };
   var coins = {}; // mint lowercase -> coin
   var rugCache = {}; // mint -> {t, data}
   var solUsd = null;
   var liveOk = false;
   var sources = [];
   var ticking = false;
+  var priceTicking = false;
   var rugClock = 0;
   var currentTick = 0;
   var everPolled = false;
+  var eqRange = "ALL";
+  var dexBackoffUntil = 0;
+  var dexBackoffMs = 1000;
+  var mintPairCache = {}; // lc(mint) -> {t, payload}
+  var fallbackBusy = {};
 
   function $(id) { return document.getElementById(id); }
   function esc(s) {
@@ -341,12 +388,33 @@ a{color:inherit}
     var to = setTimeout(function () { if (ctrl) ctrl.abort(); }, ms || 8000);
     return fetch(url, { cache: "no-store", signal: ctrl ? ctrl.signal : undefined }).then(function (r) {
       clearTimeout(to);
-      if (!r.ok) throw new Error(String(r.status));
+      if (!r.ok) {
+        var err = new Error(String(r.status));
+        err.status = r.status;
+        if (r.status === 429 && url.indexOf("dexscreener.com") >= 0) noteDexBackoff();
+        throw err;
+      }
+      if (url.indexOf("dexscreener.com") >= 0) clearDexBackoff();
       return r.json();
     }).catch(function (err) {
       clearTimeout(to);
       throw err;
     });
+  }
+  function noteDexBackoff() {
+    dexBackoffMs = Math.min((dexBackoffMs || 1000) * 2, 60000);
+    dexBackoffUntil = Date.now() + dexBackoffMs;
+  }
+  function clearDexBackoff() {
+    dexBackoffMs = 1000;
+    dexBackoffUntil = 0;
+  }
+  function dexAllowed() {
+    return Date.now() >= (dexBackoffUntil || 0);
+  }
+  function is429(r) {
+    var err = r && r.error;
+    return err && (err.status === 429 || String(err.message) === "429");
   }
   function settled(label, promise) {
     return promise.then(function (v) { return { ok: true, label: label, value: v }; })
@@ -861,14 +929,22 @@ a{color:inherit}
         else unreal += u;
       }
     });
+    var cash = num(book.cashSol);
+    var value = openReady ? invested + unreal : (openN ? null : 0);
+    var balance = null;
+    if (cash != null && value != null) balance = cash + value;
+    else if (cash != null && !openN) balance = cash;
     return {
       realized: realized,
       invested: invested,
       unreal: openReady ? unreal : null,
       total: openReady ? unreal + realized : null,
-      value: openReady ? invested + unreal : null,
+      value: value,
+      cash: cash,
+      balance: balance,
       openN: openN,
-      ready: openReady
+      ready: openReady,
+      startSol: (book.equityHistory && book.equityHistory[0]) ? num(book.equityHistory[0].sol) : null
     };
   }
   function renderPnlFresh() {
@@ -885,6 +961,10 @@ a{color:inherit}
     return '<b class="' + cls + '">' + (signed ? fmtSol(sol) : (sol.toFixed(3) + " SOL")) + "</b>" +
       (usd ? '<span class="pnl-sub">' + usd + "</span>" : "");
   }
+  function fmtBalSol(n) {
+    if (n == null || !isFinite(n)) return "—";
+    return n.toFixed(3) + " SOL";
+  }
   function renderPnl() {
     var hero = $("pnl-hero");
     if (!hero) return;
@@ -892,25 +972,32 @@ a{color:inherit}
     var pxSol = solPrice();
     var usd = (s.total != null && pxSol) ? s.total * pxSol : null;
     var ready = s.ready && s.total != null;
+    var balUsd = (s.balance != null && pxSol) ? s.balance * pxSol : null;
+    var vsStart = (s.balance != null && s.startSol != null) ? s.balance - s.startSol : null;
+    var bcls = vsStart != null ? tone(vsStart) : "flat";
+    $("bal-sol").textContent = s.balance != null ? fmtBalSol(s.balance) : "—";
+    $("bal-usd").textContent = balUsd != null ? fmtUsd(balUsd) : "—";
+    $("bal-sol").className = "bal-sol " + bcls;
+    $("bal-usd").className = "bal-usd " + bcls;
     $("pnl-usd").textContent = ready ? fmtHeroUsd(usd) : "—";
     $("pnl-sol").textContent = ready ? fmtSol(s.total) : "—";
     var tcls = ready ? tone(s.total) : "flat";
-    $("pnl-usd").className = "pnl-usd " + tcls;
-    $("pnl-sol").className = "pnl-sol " + tcls;
+    $("pnl-usd").className = "pnl-usd-sm " + tcls;
+    $("pnl-sol").className = "pnl-sol-sm " + tcls;
+    $("pnl-cash").innerHTML = sideLine(s.cash, pxSol, false);
+    $("pnl-value").innerHTML = sideLine(s.value, pxSol, false);
     $("pnl-open").innerHTML = sideLine(s.unreal, pxSol, true);
     $("pnl-real").innerHTML = sideLine(s.realized, pxSol, true);
-    $("pnl-invested").innerHTML = sideLine(s.invested, pxSol, false);
-    $("pnl-value").innerHTML = sideLine(s.value, pxSol, false);
-    var key = ready ? (usd != null ? usd.toFixed(2) : "") + ":" + s.total.toFixed(6) : "";
+    var key = (s.balance != null ? s.balance.toFixed(6) : "") + ":" + (ready ? s.total.toFixed(6) : "");
     if (lastPnlKey && key && key !== lastPnlKey) {
-      var up = (s.total != null && lastPnlSigned != null) ? s.total >= lastPnlSigned : true;
+      var up = (s.balance != null && lastPnlSigned != null) ? s.balance >= lastPnlSigned : true;
       hero.classList.remove("flash-pos", "flash-neg");
       void hero.offsetWidth;
       hero.classList.add(up ? "flash-pos" : "flash-neg");
     }
     if (key) {
       lastPnlKey = key;
-      lastPnlSigned = s.total;
+      lastPnlSigned = s.balance;
     }
     renderPnlFresh();
   }
@@ -992,7 +1079,7 @@ a{color:inherit}
     } else if (liveOk) {
       dot.classList.remove("off");
       st.textContent = "live · " + parisNow();
-      src.textContent = (sources.length ? sources.join(" · ") : "live") + " · 8s";
+      src.textContent = (sources.length ? sources.join(" · ") : "live") + " · prices 1s · feeds 8s";
     } else {
       dot.classList.add("off");
       st.textContent = "feed unavailable · " + parisNow();
@@ -1000,10 +1087,269 @@ a{color:inherit}
     }
   }
 
+  function lastHistoryMs() {
+    var h = book.equityHistory || [];
+    if (!h.length) return 0;
+    return parseTs(h[h.length - 1].t) || 0;
+  }
+  function readLiveEquity() {
+    try {
+      var o = JSON.parse(localStorage.getItem(EQUITY_LS) || "null");
+      if (!o || !o.live) return [];
+      var cut = lastHistoryMs();
+      return o.live.filter(function (p) {
+        var t = parseTs(p.t);
+        return t && t > cut && num(p.sol) != null;
+      });
+    } catch (e) { return []; }
+  }
+  function compactEquity(live, cap) {
+    if (!live || live.length <= cap) return live || [];
+    var pts = live.slice();
+    while (pts.length > cap) {
+      var dropFrom = Math.max(1, Math.floor(pts.length * 0.6));
+      var next = [pts[0]];
+      var i;
+      for (i = 1; i < pts.length - 1; i++) {
+        if (i < dropFrom && i % 2 === 1) continue;
+        next.push(pts[i]);
+      }
+      next.push(pts[pts.length - 1]);
+      if (next.length >= pts.length) {
+        pts = pts.slice(pts.length - cap);
+        break;
+      }
+      pts = next;
+    }
+    return pts;
+  }
+  function saveLiveEquity(live) {
+    try {
+      localStorage.setItem(EQUITY_LS, JSON.stringify({ live: compactEquity(live, EQUITY_CAP) }));
+    } catch (e) {}
+  }
+  function allEquityPoints() {
+    var hist = (book.equityHistory || []).filter(function (p) { return p && parseTs(p.t) && num(p.sol) != null; });
+    return hist.concat(readLiveEquity());
+  }
+  function windowEquity(all, range) {
+    if (!all.length) return [];
+    var now = Date.now();
+    var span = range === "1H" ? 3600000 : (range === "1D" ? 86400000 : null);
+    if (!span) return all.slice();
+    var cut = now - span;
+    var inWin = all.filter(function (p) { return parseTs(p.t) >= cut; });
+    var before = all.filter(function (p) { return parseTs(p.t) < cut; });
+    if (before.length) {
+      var prev = before[before.length - 1];
+      inWin.unshift({ t: new Date(cut).toISOString(), sol: prev.sol, usd: prev.usd });
+    }
+    return inWin;
+  }
+  function appendLiveEquity() {
+    var s = summarizeBook();
+    var pxSol = solPrice();
+    if (s.balance == null || !isFinite(s.balance)) return;
+    var live = readLiveEquity();
+    var now = Date.now();
+    var point = { t: new Date(now).toISOString(), sol: +s.balance.toFixed(6), usd: pxSol ? +(s.balance * pxSol).toFixed(2) : null };
+    if (live.length) {
+      var lastT = parseTs(live[live.length - 1].t) || 0;
+      if (now - lastT < 500) live[live.length - 1] = point;
+      else live.push(point);
+    } else {
+      live.push(point);
+    }
+    saveLiveEquity(live);
+  }
+  function fmtAxisTime(ms, span) {
+    try {
+      var opts = { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false };
+      if (span == null || span > 20 * 3600000) {
+        opts.month = "short";
+        opts.day = "numeric";
+      }
+      return new Date(ms).toLocaleString("en-GB", opts);
+    } catch (e) {
+      return "";
+    }
+  }
+  function renderEquity() {
+    var svg = $("eq-chart");
+    var empty = $("eq-empty");
+    var meta = $("eq-meta");
+    if (!svg) return;
+    var all = allEquityPoints();
+    var pts = windowEquity(all, eqRange);
+    var startSol = all.length ? num(all[0].sol) : null;
+    var last = pts.length ? pts[pts.length - 1] : null;
+    var vs = (last && startSol != null) ? last.sol - startSol : null;
+    if (meta) {
+      if (last && startSol != null) {
+        meta.innerHTML = "start " + startSol.toFixed(3) + " SOL · now " + last.sol.toFixed(3) +
+          " · <span class=\"" + tone(vs) + "\">" + (vs >= 0 ? "+" : "−") + Math.abs(vs).toFixed(3) + " vs start</span>";
+      } else {
+        meta.textContent = "";
+      }
+    }
+    if (!pts.length) {
+      svg.innerHTML = "";
+      if (empty) empty.hidden = false;
+      return;
+    }
+    if (empty) empty.hidden = true;
+    var wrap = svg.parentNode;
+    var w = Math.max(280, (wrap && wrap.clientWidth) || 390);
+    var h = Math.max(140, (wrap && wrap.clientHeight) || 168);
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    var padL = 42, padR = 10, padT = 14, padB = 22;
+    var times = pts.map(function (p) { return parseTs(p.t); });
+    var vals = pts.map(function (p) { return num(p.sol); });
+    var t0 = times[0], t1 = times[times.length - 1];
+    if (t1 <= t0) t1 = t0 + 1;
+    var vmin = Math.min.apply(null, vals), vmax = Math.max.apply(null, vals);
+    if (startSol != null) { vmin = Math.min(vmin, startSol); vmax = Math.max(vmax, startSol); }
+    var pad = Math.max(0.02, (vmax - vmin) * 0.12);
+    if (vmax - vmin < 0.04) pad = 0.05;
+    vmin -= pad; vmax += pad;
+    function x(ms) { return padL + (ms - t0) / (t1 - t0) * (w - padL - padR); }
+    function y(v) { return padT + (vmax - v) / (vmax - vmin) * (h - padT - padB); }
+    function pathOf(list) {
+      return list.map(function (p, i) {
+        return (i ? "L" : "M") + x(parseTs(p.t)).toFixed(2) + "," + y(num(p.sol)).toFixed(2);
+      }).join(" ");
+    }
+    var up = last && startSol != null ? last.sol + 1e-9 >= startSol : true;
+    var col = up ? "#16A34A" : "#DC2626";
+    var line = pathOf(pts);
+    var yBase = startSol != null ? y(startSol) : y(vals[0]);
+    var fill = line + " L" + x(t1).toFixed(2) + "," + yBase.toFixed(2) +
+      " L" + x(t0).toFixed(2) + "," + yBase.toFixed(2) + " Z";
+    var yCand = [vmax, vmin];
+    if (startSol != null) yCand.splice(1, 0, startSol);
+    var ticks = "";
+    var usedY = [];
+    yCand.forEach(function (v) {
+      var yy = y(v);
+      var clash = usedY.some(function (uy) { return Math.abs(uy - yy) < 14; });
+      if (clash) return;
+      usedY.push(yy);
+      ticks += '<text class="eq-axis" x="' + (padL - 4) + '" y="' + (yy + 3).toFixed(2) +
+        '" text-anchor="end" font-size="9" fill="#8A8F98" font-family="ui-monospace,monospace">' +
+        v.toFixed(2) + "</text>";
+    });
+    var span = t1 - t0;
+    var xLabels = '<text class="eq-axis" x="' + padL + '" y="' + (h - 5) +
+      '" font-size="9" fill="#8A8F98" font-family="ui-monospace,monospace">' + esc(fmtAxisTime(t0, span)) + "</text>";
+    xLabels += '<text class="eq-axis" x="' + (w - padR) + '" y="' + (h - 5) +
+      '" text-anchor="end" font-size="9" fill="#8A8F98" font-family="ui-monospace,monospace">' + esc(fmtAxisTime(t1, span)) + "</text>";
+    var base = startSol != null
+      ? '<line x1="' + padL + '" y1="' + yBase.toFixed(2) + '" x2="' + (w - padR) + '" y2="' + yBase.toFixed(2) +
+        '" stroke="#E7E7E2" stroke-width="1" stroke-dasharray="3 3" />'
+      : "";
+    var lastDot = '<circle cx="' + x(t1).toFixed(2) + '" cy="' + y(vals[vals.length - 1]).toFixed(2) +
+      '" r="3" fill="' + col + '" />';
+    svg.innerHTML = '<rect width="' + w + '" height="' + h + '" fill="none"/>' + base +
+      '<path d="' + fill + '" fill="' + col + '" fill-opacity="0.12" />' +
+      '<path d="' + line + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' +
+      lastDot + ticks + xLabels;
+  }
+  function appendAndDrawEquity() {
+    appendLiveEquity();
+    renderEquity();
+  }
+
+  function bookWatchMints() {
+    var out = [], seen = {};
+    (book.trades || []).forEach(function (t) {
+      var st = (t.status || "").toLowerCase();
+      if (!t.ca || (st !== "open" && st !== "pending")) return;
+      var k = lc(t.ca);
+      if (seen[k]) return;
+      seen[k] = 1;
+      out.push(t.ca);
+    });
+    return out;
+  }
+  function looksOnCurve(ca, best) {
+    var c = coins[lc(ca)];
+    var st = c ? stageOf(c) : "";
+    if (st === "curve") return true;
+    if (best && isPumpfunDex(best)) return true;
+    if (!best) return true;
+    return false;
+  }
+  function maybeFallbackMintFetches(batchPairs) {
+    if (!dexAllowed()) return Promise.resolve();
+    var grouped = groupPairsByBase(batchPairs);
+    var jobs = [];
+    bookWatchMints().forEach(function (ca) {
+      var g = grouped[lc(ca)] || [];
+      var hasPump = g.some(function (p) { return isPumpfunDex(p) && isValidQuotePair(p, ca); });
+      if (hasPump) return;
+      var cache = mintPairCache[lc(ca)];
+      var wait = (cache && cache.noPumpfun) ? 30000 : FALLBACK_MS;
+      if (cache && Date.now() - cache.t < wait) {
+        if (cache.payload) enrichFromDexTokens(cache.payload);
+        return;
+      }
+      if (fallbackBusy[lc(ca)]) return;
+      fallbackBusy[lc(ca)] = true;
+      jobs.push(settled("dex-fb", timedFetch(DEX + "/latest/dex/tokens/" + ca, 6000)).then(function (r) {
+        fallbackBusy[lc(ca)] = false;
+        if (!r.ok) return;
+        var fp = pairsFromDex(r.value);
+        var foundPump = fp.some(function (p) { return isPumpfunDex(p) && isValidQuotePair(p, ca); });
+        mintPairCache[lc(ca)] = { t: Date.now(), payload: r.value, noPumpfun: !foundPump };
+        enrichFromDexTokens(r.value);
+      }));
+    });
+    return jobs.length ? Promise.all(jobs) : Promise.resolve();
+  }
+  function refreshPrices() {
+    if (priceTicking) return;
+    if (!dexAllowed()) {
+      renderPnl();
+      appendAndDrawEquity();
+      return;
+    }
+    var ids = [];
+    var seen = {};
+    seen[lc(WSOL)] = 1;
+    ids.push(WSOL);
+    bookWatchMints().forEach(function (m) {
+      if (seen[lc(m)]) return;
+      seen[lc(m)] = 1;
+      ids.push(m);
+    });
+    ids = ids.slice(0, 30);
+    priceTicking = true;
+    return settled("dex-price", timedFetch(DEX + "/latest/dex/tokens/" + ids.join(","), 6000)).then(function (r) {
+      var pairs = [];
+      if (r.ok) {
+        pairs = pairsFromDex(r.value);
+        enrichFromDexTokens(pairs);
+        pricesAt = Date.now();
+        liveOk = true;
+        return maybeFallbackMintFetches(pairs);
+      }
+    }).then(function () {
+      priceTicking = false;
+      renderPnl();
+      renderPaper();
+      appendAndDrawEquity();
+    }).catch(function () {
+      priceTicking = false;
+      renderPnl();
+      appendAndDrawEquity();
+    });
+  }
+
   function render() {
     renderStatus();
     renderPnl();
     renderPaper();
+    appendAndDrawEquity();
     renderNear();
     renderLaunch();
     renderGrad();
@@ -1029,6 +1375,7 @@ a{color:inherit}
       settled("geckoterminal", timedFetch(GECKO + "/networks/solana/new_pools?page=1&include=base_token,quote_token,dex", 8000))
     ];
     currentTick = Date.now();
+    return loadBook().catch(function () {}).then(function () {
     return Promise.all(jobs).then(function (rs) {
       var ok = [];
       rs.forEach(function (r) {
@@ -1062,29 +1409,12 @@ a{color:inherit}
         tr.forEach(function (r) {
           if (r.ok) { any = true; enrichFromDexTokens(r.value); }
         });
-        /* Full pair lists per paper mint: /latest/dex/tokens/<ca> returns
-           many pairs, including bogus high-liq quotes (e.g. mihao/MM at $69).
-           Fetch one mint at a time so a 30-pair cap cannot hide the real SOL pair.
-           Dedicated WSOL fetch supplies the live SOL/USD rate. */
-        var bookJobs = bookMints().map(function (ca) {
-          return settled("dex-book", timedFetch(DEX + "/latest/dex/tokens/" + ca, 8000));
-        });
-        bookJobs.push(settled("dex-sol", timedFetch(DEX + "/tokens/v1/solana/" + WSOL, 8000)));
-        return Promise.all(bookJobs).then(function (br) {
-          var bookOk = false, solOk = false;
-          br.forEach(function (r) {
-            if (!r.ok) return;
-            enrichFromDexTokens(r.value);
-            if (r.label === "dex-sol") solOk = true;
-            else bookOk = true;
-          });
-          if (any) ok.push("dexscreener-tokens");
-          if (bookOk) ok.push("dexscreener-tokens");
-          if (bookOk || any) pricesAt = Date.now();
-          sources = uniqueSrc(ok);
-          liveOk = ok.length > 0;
-          return true;
-        });
+        /* Book prices are refreshed every 1s via a single batched
+           /latest/dex/tokens call in refreshPrices(). Do not add per-mint
+           fetches here — DexScreener rate-limits at ~300 req/min. */
+        if (any) { ok.push("dexscreener-tokens"); if (!pricesAt) pricesAt = Date.now(); }
+        sources = uniqueSrc(ok);
+        liveOk = ok.length > 0 || liveOk;
       }).then(function () {
         /* drop stale feed coins not in this tick and not in the paper book */
         var keep = {};
@@ -1104,8 +1434,9 @@ a{color:inherit}
       render();
     }).catch(function () {
       ticking = false;
-      if (!allCoins().length) liveOk = false;
+      if (!allCoins().length && !pricesAt) liveOk = false;
       render();
+    });
     });
   }
 
@@ -1144,12 +1475,15 @@ a{color:inherit}
     return timedFetch("data.json?t=" + Date.now(), 6000).then(function (d) {
       book.trades = (d && d.paper_trades) || [];
       if (d && d.meta && d.meta.snapshot_sol_price) book.solHint = num(d.meta.snapshot_sol_price) || book.solHint;
+      if (d && d.meta && d.meta.cash_sol != null) book.cashSol = num(d.meta.cash_sol);
+      book.equityHistory = (d && d.equity_history) || book.equityHistory || [];
       book.trades.forEach(function (t) {
         if (!t.ca) return;
         upsert({ mint: t.ca, ticker: t.symbol, name: t.symbol, src: "book" });
       });
     }).catch(function () {
       book.trades = book.trades || [];
+      book.equityHistory = book.equityHistory || [];
     });
   }
 
@@ -1160,9 +1494,18 @@ a{color:inherit}
       renderLaunch();
     });
   });
+  document.querySelectorAll("#equity-range [data-eq]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      eqRange = btn.getAttribute("data-eq");
+      document.querySelectorAll("#equity-range [data-eq]").forEach(function (b) { b.classList.toggle("on", b === btn); });
+      renderEquity();
+    });
+  });
+  window.addEventListener("resize", function () { renderEquity(); });
 
-  loadBook().then(function () { render(); return refresh(); });
+  loadBook().then(function () { render(); refreshPrices(); return refresh(); });
   setInterval(refresh, POLL_MS);
+  setInterval(refreshPrices, PRICE_MS);
   setInterval(renderPnlFresh, 1000);
 })();
   </script>
