@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Desk">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <title>Chief desk · PAPER</title>
+  <style>
+
+:root {
+  --bg: #F9F9F9;
+  --card: #FFFFFF;
+  --text: #111111;
+  --muted: #9CA3AF;
+  --muted-2: #888888;
+  --line: #E5E7EB;
+  --soft: #F3F4F6;
+  --green: #22C55E;
+  --green-text: #15803D;
+  --green-bg: #DCFCE7;
+  --red: #EF4444;
+  --red-text: #B91C1C;
+  --red-bg: #FEE2E2;
+  --amber: #D97706;
+  --amber-bg: #FEF3C7;
+  --blue: #2563EB;
+  --blue-bg: #DBEAFE;
+  --mint: #ECFDF5;
+  --sans: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Roboto Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background: var(--bg);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.app {
+  width: min(390px, 100%);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #fff;
+  padding-bottom: 36px;
+}
+.mono { font-family: var(--mono); font-size: 12px; }
+.muted { color: var(--muted); }
+.tiny { font-size: 11px; line-height: 1.4; margin-top: 8px; }
+.pos { color: var(--green-text); }
+.neg { color: var(--red-text); }
+.flat { color: var(--muted-2); }
+
+.ticker {
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.ticker-track {
+  display: inline-flex;
+  gap: 22px;
+  padding-left: 16px;
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.tick { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--text); }
+.tick b { font-weight: 700; }
+.tick.pos { color: var(--green-text); }
+.tick.neg { color: var(--red-text); }
+.tick.flat { color: var(--muted-2); }
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.hero { padding: 14px 16px 8px; }
+.status-line {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted-2);
+  margin-bottom: 10px;
+}
+.hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.balance {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+  color: #111;
+}
+.balance .unit { font-size: 18px; font-weight: 700; letter-spacing: -0.03em; color: #111; }
+.approx { margin-top: 6px; color: var(--muted-2); font-size: 14px; }
+.pnl-pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 8px;
+  white-space: nowrap;
+}
+.pnl-pill.pos { background: var(--green-bg); color: var(--green-text); }
+.pnl-pill.neg { background: var(--red-bg); color: var(--red-text); }
+.pnl-pill.flat { background: var(--soft); color: var(--muted-2); }
+
+.subrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.sub { font-family: var(--mono); font-size: 13px; color: #374151; }
+.mult {
+  display: inline-flex;
+  align-items: center;
+  background: #111;
+  color: #fff;
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: -0.02em;
+}
+.conn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+.conn {
+  color: var(--green-text);
+  font-size: 12.5px;
+  font-weight: 650;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  line-height: 1.35;
+}
+.conn-row time {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  padding-top: 1px;
+}
+.dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(34,197,94,0.55);
+  animation: pulse 1.6s ease-out infinite;
+  flex: 0 0 auto;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+  70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+}
+
+.chart-block { padding: 0 8px 6px; }
+.chart { display: block; overflow: visible; }
+.chart .baseline { stroke: #9CA3AF; stroke-width: 1; stroke-dasharray: 4 4; }
+.chart .line {
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw 1.2s ease forwards 0.15s;
+}
+.chart .cap {
+  fill: #fff;
+  stroke-width: 2.4;
+  opacity: 0;
+  animation: fade 0.3s ease forwards 1.2s;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade { to { opacity: 1; } }
+.chart-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px 4px;
+  font-size: 12px;
+}
+.legend { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; }
+.legend b { color: #111; font-weight: 700; }
+.swatch { width: 14px; height: 0; border-top: 2px solid #111; display: inline-block; }
+.swatch.put { border-top: 2px dashed #9CA3AF; }
+.hist-cap { padding: 0 8px 8px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+.seats, .trades, .recap { padding: 4px 16px 8px; }
+.sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin: 10px 0 8px;
+}
+.sec-head h2, .decisions h2, .recap h3 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.gate { font-size: 11px; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 12px 10px;
+  margin-bottom: 10px;
+}
+.card-head, .trade-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.card-head h3 { font-size: 14px; font-weight: 700; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.badge.gray { background: var(--soft); color: #6B7280; }
+.badge.blue { background: var(--blue-bg); color: var(--blue); }
+.badge.orange { background: var(--amber-bg); color: var(--amber); }
+.badge.test { background: #F3E8FF; color: #7C3AED; }
+
+.rows { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.rows li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+.rows li > .mono { flex: 1; min-width: 0; }
+.rows li time { flex: 0 0 auto; white-space: nowrap; }
+.rows .badge { margin-left: 4px; }
+.rows b { font-weight: 700; }
+.rows .trade, .rows .buy { color: var(--green-text); }
+.rows .wait { color: var(--amber); }
+.rows .skip { color: #6B7280; }
+.rows .forced { color: #7C3AED; }
+.pass { color: var(--green-text); font-weight: 700; white-space: nowrap; }
+.fail { color: var(--red-text); font-weight: 700; white-space: nowrap; }
+.radar li { align-items: center; }
+.radar .left { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.radar .reason { text-align: right; max-width: 42%; }
+
+.tok {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  font-family: var(--sans);
+  flex: 0 0 auto;
+  vertical-align: -3px;
+}
+.tok-sm { width: 16px; height: 16px; font-size: 9px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--soft);
+  color: #4B5563;
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.decisions {
+  margin: 8px 16px 12px;
+  background: var(--mint);
+  border-radius: 16px;
+  padding: 12px;
+}
+.decisions .card-head { margin-bottom: 6px; }
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--green-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+.feed {
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-right: 2px;
+}
+.feed li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; }
+.feed time { color: var(--muted-2); width: 42px; flex: 0 0 auto; }
+.feed .act { font-weight: 800; width: 36px; flex: 0 0 auto; }
+.feed .buy .act, .feed.buy .act, .feed li.buy .act { color: var(--green-text); }
+.feed li.sell .act { color: var(--red-text); }
+.feed li.wait .act { color: var(--amber); }
+.feed li.skip .act { color: #6B7280; }
+.feed li.info .act, .feed li.mix .act { color: var(--muted-2); }
+.feed .why { color: #374151; flex: 1 1 100%; }
+.feed li.buy .why, .feed li.sell .why, .feed li.skip .why, .feed li.wait .why { flex: 1 1 100%; }
+
+.trade {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #fff;
+}
+.trade-line { font-size: 11.5px; margin: 2px 0 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.page-foot {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 8px 16px 4px;
+}
+
+.recap {
+  margin-top: 4px;
+}
+.recap-toggle {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  font-size: 16px;
+  padding: 8px 0;
+  cursor: pointer;
+  color: #111;
+}
+.recap-body {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+}
+.recap-body.hidden { display: none; }
+.recap .put { color: var(--muted-2); margin: 6px 0 4px; }
+.recap .now { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.recap .rule { margin: 8px 0 12px; font-size: 12px; }
+.open-paper {
+  display: block;
+  text-align: center;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 800;
+}
+
+html.static .ticker-track,
+html.static .dot { animation: none; }
+html.static .chart .line { stroke-dashoffset: 0; animation: none; }
+html.static .chart .cap { opacity: 1; animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track, .chart .line, .chart .cap, .dot { animation: none; }
+  .chart .line { stroke-dashoffset: 0; }
+  .chart .cap { opacity: 1; }
+}
+
+.balance .currency { font-weight: 800; letter-spacing: -0.05em; }
+.balance.flash-up { color: var(--green-text); transition: color 0.15s; }
+.balance.flash-down { color: var(--red-text); transition: color 0.15s; }
+.live-status {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--green-text);
+  font-weight: 650;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot.off { background: #9CA3AF; box-shadow: none; animation: none; }
+.live-status .dot.off + [data-live], [data-live].off { color: var(--muted-2); }
+
+  </style>
+</head>
+<body>
+  <main class="app">
+    
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track"><span class="tick flat" data-tick-symbol="$BONK"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b><span data-tick-move> +0.0% 1h</span></span><span class="tick pos" data-tick-symbol="$WIF"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b><span data-tick-move> +0.3% 1h</span></span><span class="tick pos" data-tick-symbol="$HYPE"><span class="tok tok-sm" style="background:#06B6D4">H</span> <b>$HYPE</b><span data-tick-move> +6.05% day</span></span><span class="tick pos" data-tick-symbol="$ZEC"><span class="tok tok-sm" style="background:#EAB308">Z</span> <b>$ZEC</b><span data-tick-move> +6.46% day</span></span><span class="tick flat" data-tick-symbol="$HIPPO"><span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b><span data-tick-move></span></span><span class="tick flat" data-tick-symbol="$BONK"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b><span data-tick-move> +0.0% 1h</span></span><span class="tick pos" data-tick-symbol="$WIF"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b><span data-tick-move> +0.3% 1h</span></span><span class="tick pos" data-tick-symbol="$HYPE"><span class="tok tok-sm" style="background:#06B6D4">H</span> <b>$HYPE</b><span data-tick-move> +6.05% day</span></span><span class="tick pos" data-tick-symbol="$ZEC"><span class="tok tok-sm" style="background:#EAB308">Z</span> <b>$ZEC</b><span data-tick-move> +6.46% day</span></span><span class="tick flat" data-tick-symbol="$HIPPO"><span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b><span data-tick-move></span></span><span class="tick flat" data-tick-symbol="$BONK"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b><span data-tick-move> +0.0% 1h</span></span><span class="tick pos" data-tick-symbol="$WIF"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b><span data-tick-move> +0.3% 1h</span></span><span class="tick pos" data-tick-symbol="$HYPE"><span class="tok tok-sm" style="background:#06B6D4">H</span> <b>$HYPE</b><span data-tick-move> +6.05% day</span></span><span class="tick pos" data-tick-symbol="$ZEC"><span class="tok tok-sm" style="background:#EAB308">Z</span> <b>$ZEC</b><span data-tick-move> +6.46% day</span></span><span class="tick flat" data-tick-symbol="$HIPPO"><span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b><span data-tick-move></span></span><span class="tick flat" data-tick-symbol="$BONK"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b><span data-tick-move> +0.0% 1h</span></span><span class="tick pos" data-tick-symbol="$WIF"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b><span data-tick-move> +0.3% 1h</span></span><span class="tick pos" data-tick-symbol="$HYPE"><span class="tok tok-sm" style="background:#06B6D4">H</span> <b>$HYPE</b><span data-tick-move> +6.05% day</span></span><span class="tick pos" data-tick-symbol="$ZEC"><span class="tok tok-sm" style="background:#EAB308">Z</span> <b>$ZEC</b><span data-tick-move> +6.46% day</span></span><span class="tick flat" data-tick-symbol="$HIPPO"><span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b><span data-tick-move></span></span></div>
+    </div>
+    
+
+    <header class="hero">
+      <p class="status-line">trading via PAPER · 5 seats loaded · 16m in</p>
+      <div class="hero-top">
+        <div>
+          <p class="balance" data-count="700.00" data-decimals="2">
+            <span class="currency">$</span><span class="n">700.00</span>
+          </p>
+          <p class="approx" data-sol>≈9.97 SOL</p>
+        </div>
+        <div class="pnl-pill neg" data-pnl title="vs $708 start (12:30 CET)">-$8.00</div>
+      </div>
+      <div class="subrow">
+        <span class="sub">in $708 · 2 trades</span>
+        <span class="mult" data-mult>0.989x</span>
+      </div>
+      <div class="conn-row">
+        <div>
+          <p class="conn"><span class="dot" aria-hidden="true"></span> PAPER connected · Co-Invest paper</p>
+          <p class="live-status"><span class="dot" data-livedot></span> <span data-live>live · snapshot 13:32 CET</span></p>
+        </div>
+        <time>12:46 CET</time>
+      </div>
+    </header>
+    
+
+    <section class="chart-block" id="portfolio">
+      <div id="chart-mount">
+    <svg class="chart" viewBox="0 0 358 168" width="100%" height="168" role="img" aria-label="PAPER portfolio in USD">
+      <defs>
+        <linearGradient id="portFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EF4444" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#EF4444" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <line class="baseline" x1="8" y1="39.67" x2="348" y2="39.67" />
+      <polygon class="area" points="8.00,39.67 8.00,39.67 121.33,51.50 234.67,75.17 348.00,134.33 348.00,39.67" fill="url(#portFill)"/>
+      <path class="line" d="M 8.00 39.67 L 121.33 51.50 L 234.67 75.17 L 348.00 134.33" stroke="#EF4444" style="--len:357.6"/>
+      <circle class="cap" cx="348.00" cy="134.33" r="6" stroke="#EF4444"/>
+    </svg>
+    </div>
+      <div class="chart-meta">
+        <span class="mono muted">12:30</span>
+        <span class="legend"><i class="swatch value"></i> <b data-chart-value>700.00</b> <i class="swatch put"></i> <span class="muted">708 put in</span></span>
+      </div>
+      
+    </section>
+    
+
+    <section class="seats" id="radar">
+      <div class="sec-head">
+        <h2>5 seats running</h2>
+        <span class="mono muted gate">— skeptic gate -- paper</span>
+      </div>
+      
+    <article class="card">
+      <div class="card-head">
+        <h3>Skeptic · desk score</h3>
+        <span class="badge gray">desk score</span>
+      </div>
+      <ul class="rows"><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#9CA3AF">B</span> <b>$BLOB</b> — — <span class="—">—</span></span>
+              <time class="mono muted">13:14</time>
+            </li><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#9CA3AF">S</span> <b>$SINGULARITY</b> — — <span class="—">—</span></span>
+              <time class="mono muted">13:14</time>
+            </li><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b> 20/100 — <span class="skip">skip</span> <span class="muted">No-setup</span></span>
+              <time class="mono muted">12:46</time>
+            </li><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#EAB308">Z</span> <b>$ZEC</b> 15/100 — <span class="skip">skip</span></span>
+              <time class="mono muted">12:17</time>
+            </li><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#06B6D4">H</span> <b>$HYPE</b> 50/100 — <span class="wait">wait</span></span>
+              <time class="mono muted">12:17</time>
+            </li><li>
+              <span class="mono">desk.score <span class="tok tok-sm" style="background:#22C55E">F</span> <b>$FROGZ</b> 50/100 — <span class="wait">wait</span> <span class="badge test">TEST</span></span>
+              <time class="mono muted">12:16</time>
+            </li><li>
+                  <span class="mono">desk.score <span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b> — <span class="forced">forced test</span> <span class="badge test">FORCED TEST</span></span>
+                  <time class="mono muted">12:39</time>
+                </li><li>
+                  <span class="mono">desk.score <span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b> — <span class="forced">forced test</span> <span class="badge test">FORCED TEST</span></span>
+                  <time class="mono muted">12:38</time>
+                </li></ul>
+      <p class="tiny muted">Desk score: Skip 20 · Wait 50 · Buy 80 · +5 if T1 R:R &gt; 2.5 · −5 if T1 R:R &lt; 2</p>
+    </article>
+    
+      
+    <article class="card">
+      <div class="card-head">
+        <h3>safety checks</h3>
+        <span class="badge blue">wallet check</span>
+      </div>
+      <ul class="rows"><li>
+              <span class="mono"><span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b> 95NA…pump · liq ~$22k</span>
+              <span class="muted">—</span>
+            </li><li>
+              <span class="mono"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b> EKpQ…zcjm · liq $3.68M · MC $120.15M</span>
+              <span class="muted">—</span>
+            </li><li>
+              <span class="mono"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b> DezX…B263 · liq $112.7K · MC $183.60M</span>
+              <span class="muted">—</span>
+            </li><li>
+              <span class="mono"><span class="tok tok-sm" style="background:#22C55E">F</span> <b>$FROGZ</b> CA — · liq $610k · MC $4.2M · top-10 31% <span class="badge test">TEST</span></span>
+              <span class="muted">—</span>
+            </li></ul>
+      <p class="tiny muted">Pass/fail shown only when a check was recorded. No wallet win rates on file.</p>
+    </article>
+    
+      
+    <article class="card">
+      <div class="card-head">
+        <h3>meme-radar (Scout)</h3>
+        <span class="badge gray">read-only · no keys</span>
+      </div>
+      <ul class="rows radar"><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#9CA3AF">B</span> <b class="mono">$BLOB</b> </span>
+              <span class="reason mono muted" title=""></span>
+            </li><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#9CA3AF">S</span> <b class="mono">$SINGULARITY</b> </span>
+              <span class="reason mono muted" title=""></span>
+            </li><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#F97316">H</span> <b class="mono">$HIPPO</b> <span class="chip">Solana</span></span>
+              <span class="reason mono muted" title="Charts No-setup. Sentiment avoid. Thin liq/insiders/bot spam. Liq ~$22k, size 0.">Charts No-setup. Sentiment avoid. Thin l…</span>
+            </li><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#EAB308">Z</span> <b class="mono">ZEC</b> </span>
+              <span class="reason mono muted" title="Mark 798.4, 24h vol ~$170M, OI ~$225M.">Mark 798.4, 24h vol ~$170M, OI ~$225M.</span>
+            </li><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#06B6D4">H</span> <b class="mono">HYPE</b> </span>
+              <span class="reason mono muted" title="Mark 62.409, 24h vol ~$303M, OI ~$1.15B.">Mark 62.409, 24h vol ~$303M, OI ~$1.15B.</span>
+            </li><li>
+              <span class="left"><span class="badge orange">Flagged</span> <span class="tok tok-sm" style="background:#22C55E">F</span> <b class="mono">$FROGZ</b> <span class="chip">Solana</span> <span class="badge test">TEST</span></span>
+              <span class="reason mono muted" title="Price $0.0042, mcap $4.2M, liquidity $610k, 24h vol $9.8M (+620%), +38% in 4h. 3 smart-money wallets bought ~$140k.">Price $0.0042, mcap $4.2M, liquidity $61…</span>
+            </li></ul>
+      <p class="tiny muted">2 Solana flags (TEST $FROGZ, $HIPPO) · 2 monitor flags (ZEC, HYPE) · BONK/WIF were forced test trades, not Scout flags</p>
+    </article>
+    
+    </section>
+    
+
+    <section class="decisions" id="log">
+      <div class="card-head">
+        <h2>Chief · decisions</h2>
+        <span class="live"><span class="dot"></span> live</span>
+      </div>
+      <ol class="feed"><li class="skip">
+              <time>13:16</time>
+              <span class="act">SKIP</span>
+              <span class="tok tok-sm" style="background:#9CA3AF">B</span> <b>$BLOB</b>
+              <span class="why">Bundled-scam flag unchallenged into −29% 1h dump. Size 0.</span>
+            </li><li class="skip">
+              <time>13:16</time>
+              <span class="act">SKIP</span>
+              <span class="tok tok-sm" style="background:#9CA3AF">S</span> <b>$SINGULARITY</b>
+              <span class="why">Paid multi-lang shill + parabola, no structure. Size 0.</span>
+            </li><li class="buy">
+              <time>13:04</time>
+              <span class="act">BUY</span>
+              <span class="tok tok-sm" style="background:#9CA3AF">F</span> <b>$FARTCOIN</b> <span class="badge test">TEST</span>
+              <span class="why">lunch test · 0.30 SOL @ $0.0784 · SL −12% / TP +20%</span>
+            </li><li class="buy">
+              <time>13:04</time>
+              <span class="act">BUY</span>
+              <span class="tok tok-sm" style="background:#9CA3AF">M</span> <b>$MEW</b> <span class="badge test">TEST</span>
+              <span class="why">lunch test · 0.30 SOL @ $0.000286 · SL −12% / TP +20%</span>
+            </li><li class="buy">
+              <time>13:04</time>
+              <span class="act">BUY</span>
+              <span class="tok tok-sm" style="background:#9CA3AF">P</span> <b>$POPCAT</b> <span class="badge test">TEST</span>
+              <span class="why">lunch test · 0.60 SOL @ $0.0246 · SL −12% / TP +20%</span>
+            </li><li class="skip">
+              <time>12:46</time>
+              <span class="act">SKIP</span>
+              <span class="tok tok-sm" style="background:#F97316">H</span> <b>$HIPPO</b>
+              <span class="why">No-setup, liq ~$22k, size 0. Flip: only if liq ≥$75–100k + clean structure + Sentiment not avoid.</span>
+            </li><li class="buy">
+              <time>12:39</time>
+              <span class="act">BUY</span>
+              <span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b> <span class="badge test">TEST</span>
+              <span class="why">FORCED TEST · 0.25 SOL → 145 · fill $0.120 · SL −15% / TP +25% · −0.0037 SOL (−$0.26) −1.5%</span>
+            </li><li class="buy">
+              <time>12:38</time>
+              <span class="act">BUY</span>
+              <span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b> <span class="badge test">TEST</span>
+              <span class="why">FORCED TEST · 0.25 SOL → 8.4M · fill $0.0000209 · SL −15% / TP +25% · −0.0039 SOL (−$0.27) −1.5%</span>
+            </li><li class="info">
+              <time>12:30</time>
+              
+              
+              <span class="why">PAPER login confirmed (10 SOL). Flow enabled: Skeptic Buy on a Solana meme leads to a paper trade on PAPER per the Charts plan. Non-Solana Buys are dry-run only.</span>
+            </li><li class="mix">
+              <time>12:21</time>
+              
+              
+              <span class="why">ZEC Skip, HYPE Wait; no proposals to Noam.</span>
+            </li><li class="info">
+              <time>12:20</time>
+              
+              
+              <span class="why">Live routing loop activated, ZEC and HYPE sent to Charts.</span>
+            </li><li class="wait">
+              <time>12:18</time>
+              <span class="act">WAIT</span>
+              <span class="tok tok-sm" style="background:#22C55E">F</span> <b>$FROGZ</b> <span class="badge test">TEST</span>
+              <span class="why">$FROGZ test complete, Skeptic Wait, not surfaced as actionable.</span>
+            </li><li class="info">
+              <time>12:16</time>
+              
+              <span class="tok tok-sm" style="background:#22C55E">F</span> <b>$FROGZ</b> <span class="badge test">TEST</span>
+              <span class="why">Controlled routing test started ($FROGZ, fictional).</span>
+            </li><li class="info">
+              <time>12:11</time>
+              
+              
+              <span class="why">Routing protocol set: flags go to Charts, then Skeptic, and only Buy ideas are surfaced.</span>
+            </li><li class="info">
+              <time>12:02</time>
+              
+              
+              <span class="why">Desk expanded to 6 seats, Chief is the front door.</span>
+            </li><li class="info">
+              <time>11:44</time>
+              
+              
+              <span class="why">Account confirmed in paper mode.</span>
+            </li></ol>
+    </section>
+    
+
+    <section class="trades" id="trades">
+      <div class="sec-head">
+        <h2>PAPER trades</h2>
+        <span class="mono muted">tradepaperapp.com</span>
+      </div>
+      
+            <article class="trade" data-pos data-ca="9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump" data-amount="268" data-cost-sol="0.304">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">F</span> <b>$FARTCOIN</b> <span class="act buy">BUY</span> <span class="badge test">LUNCH TEST</span></span>
+                <time class="mono muted">13:04 CET</time>
+              </div>
+              <p class="mono trade-line">
+                268 · 0.30 SOL
+                · fill $0.0784
+                · <span data-live-val>now — SOL</span>
+                <span class="" data-live-pnl> </span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">9BB6…pump</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5" data-amount="73300" data-cost-sol="0.304">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">M</span> <b>$MEW</b> <span class="act buy">BUY</span> <span class="badge test">LUNCH TEST</span></span>
+                <time class="mono muted">13:04 CET</time>
+              </div>
+              <p class="mono trade-line">
+                73.3K · 0.30 SOL
+                · fill $0.000286
+                · <span data-live-val>now — SOL</span>
+                <span class="" data-live-pnl> </span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">MEW1…cPP5</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr" data-amount="1712" data-cost-sol="0.608">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">P</span> <b>$POPCAT</b> <span class="act buy">BUY</span> <span class="badge test">LUNCH TEST</span></span>
+                <time class="mono muted">13:04 CET</time>
+              </div>
+              <p class="mono trade-line">
+                1.7K · 0.60 SOL
+                · fill $0.0246
+                · <span data-live-val>now — SOL</span>
+                <span class="" data-live-pnl> </span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">7GCi…W2hr</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm" data-amount="145" data-cost-sol="0.251">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#A78BFA">W</span> <b>$WIF</b> <span class="act buy">BUY</span> <span class="badge test">FORCED TEST</span></span>
+                <time class="mono muted">12:39 CET</time>
+              </div>
+              <p class="mono trade-line">
+                145 · 0.25 SOL
+                · fill $0.120
+                · <span data-live-val>now 0.247 SOL</span>
+                <span class="neg" data-live-pnl>-0.0037 SOL (-$0.26) -1.5%</span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -15%</span>
+                <span class="chip">TP +25%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">EKpQ…zcjm</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263" data-amount="8400000" data-cost-sol="0.251">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#F59E0B">B</span> <b>$BONK</b> <span class="act buy">BUY</span> <span class="badge test">FORCED TEST</span></span>
+                <time class="mono muted">12:38 CET</time>
+              </div>
+              <p class="mono trade-line">
+                8.4M · 0.25 SOL
+                · fill $0.0000209
+                · <span data-live-val>now 0.247 SOL</span>
+                <span class="neg" data-live-pnl>-0.0039 SOL (-$0.27) -1.5%</span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -15%</span>
+                <span class="chip">TP +25%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">DezX…B263</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv" data-amount="6456" data-cost-sol="0.405">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">P</span> <b>$PENGU</b> <span class="act buy">BUY</span> <span class="badge test">AFTERNOON TEST</span></span>
+                <time class="mono muted">13:32 CET</time>
+              </div>
+              <p class="mono trade-line">
+                6,456 · 0.40 SOL
+                · fill $0.00430
+                · <span data-live-val>now 0.40 SOL</span>
+                <span class="pos" data-live-pnl>0.00 SOL 0.0%</span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">2zMM…uauv</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="63LfDmNb3MQ8mw9MtZ2To9bEA2M71kZUUGq5tiJxcqj9" data-amount="19268" data-cost-sol="0.405">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">G</span> <b>$GIGA</b> <span class="act buy">BUY</span> <span class="badge test">AFTERNOON TEST</span></span>
+                <time class="mono muted">13:32 CET</time>
+              </div>
+              <p class="mono trade-line">
+                19,268 · 0.40 SOL
+                · fill $0.00144
+                · <span data-live-val>now 0.40 SOL</span>
+                <span class="pos" data-live-pnl>0.00 SOL 0.0%</span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">63Lf…cqj9</span>
+              </p>
+            </article>
+                
+            <article class="trade" data-pos data-ca="CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump" data-amount="2655" data-cost-sol="0.405">
+              <div class="trade-top">
+                <span class="mono"><span class="tok tok-sm" style="background:#9CA3AF">G</span> <b>$GOAT</b> <span class="act buy">BUY</span> <span class="badge test">AFTERNOON TEST</span></span>
+                <time class="mono muted">13:32 CET</time>
+              </div>
+              <p class="mono trade-line">
+                2,655 · 0.40 SOL
+                · fill $0.0105
+                · <span data-live-val>now 0.40 SOL</span>
+                <span class="pos" data-live-pnl>0.00 SOL 0.0%</span>
+              </p>
+              <p class="chips">
+                <span class="chip">SL -12%</span>
+                <span class="chip">TP +20%</span>
+                <span class="chip">filled</span>
+                <span class="chip mono">CzLS…pump</span>
+              </p>
+            </article>
+                
+    </section>
+    
+<p class="page-foot">Simulated only · No real funds</p>
+
+    <section class="recap" id="recap">
+      <button type="button" class="recap-toggle" aria-expanded="true">session recap</button>
+      <div class="recap-body">
+        <h3>PAPER · Chief desk</h3>
+        <p class="put">put in $708</p>
+        <p class="now">now worth <span class="neg" data-recap-now>$707</span> <span class="mult" data-recap-mult>0.999x</span></p>
+        <p class="mono muted">trades 2 | flags 4 | seats 5</p>
+        <p class="mono">best $WIF −1.5% (−$0.26) · worst $BONK −1.5% (−$0.27)</p>
+        <p class="rule muted">Skeptic Buy required · SL −15% / TP +25% on tests</p>
+        <a class="open-paper" href="https://tradepaperapp.com/">open PAPER</a>
+      </div>
+    </section>
+    
+  </main>
+  <script type="application/json" id="live-config">{"holdings":{"cash_sol":7.09,"wsol_ca":"So11111111111111111111111111111111111111112","start_sol":10.0,"start_usd":708,"start_sol_price":70.76,"start_asof":"12:30 CET","start_source":"PAPER portfolio header at login: 10.00 SOL = $708, SOL $70.76","snapshot_sol":9.97,"snapshot_usd":700,"snapshot_sol_price":70.71,"snapshot_asof":"13:32 CET","snapshot_source":"PAPER portfolio: Total 9.98 SOL, $705, cash 8.29 SOL","tokens":[{"symbol":"$BONK","initials":"B","ca":"DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263","amount":8400000,"amount_label":"8.4M","cost_sol":0.251,"coingecko_id":"bonk"},{"symbol":"$WIF","initials":"W","ca":"EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm","amount":145,"amount_label":"145","cost_sol":0.251,"coingecko_id":"dogwifcoin"},{"symbol":"$POPCAT","initials":"P","ca":"7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr","amount":1712,"amount_label":"1.7K","cost_sol":0.608},{"symbol":"$MEW","initials":"M","ca":"MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5","amount":73300,"amount_label":"73.3K","cost_sol":0.304},{"symbol":"$FARTCOIN","initials":"F","ca":"9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump","amount":268,"amount_label":"268","cost_sol":0.304},{"symbol":"$PENGU","initials":"P","ca":"2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv","amount":6456,"amount_label":"6,456","cost_sol":0.405},{"symbol":"$GIGA","initials":"G","ca":"63LfDmNb3MQ8mw9MtZ2To9bEA2M71kZUUGq5tiJxcqj9","amount":19268,"amount_label":"19,268","cost_sol":0.405},{"symbol":"$GOAT","initials":"G","ca":"CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump","amount":2655,"amount_label":"2,655","cost_sol":0.405}],"watch":[{"symbol":"$HIPPO","initials":"H","ca":"95NAbTyZopHGJK9TuisJZUHKAZSqRoSB3JPfqAqHpump"}],"poll_ms":8000},"history":[{"t":1795347000000,"usd":708,"label":"12:30 CET"},{"t":1795347540000,"usd":707,"label":"12:39 CET"},{"t":1795349100000,"usd":705,"label":"13:05 CET"},{"t":1795350720000,"usd":700,"label":"13:32 CET"}]}</script>
+  <script>
+
+(function () {
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var staticShot = /static=1/.test(location.search);
+  if (reduced || staticShot) document.documentElement.classList.add("static");
+
+  var btn = document.querySelector(".recap-toggle");
+  var body = document.querySelector(".recap-body");
+  if (btn && body) {
+    btn.addEventListener("click", function () {
+      var hidden = body.classList.toggle("hidden");
+      btn.setAttribute("aria-expanded", hidden ? "false" : "true");
+    });
+  }
+
+  function animateNumber(el, target, decimals, prefix) {
+    var n = el.querySelector(".n") || el;
+    if (reduced || staticShot || !isFinite(target)) {
+      n.textContent = target.toFixed(decimals);
+      return;
+    }
+    var start = parseFloat(String(n.textContent).replace(/,/g, ""));
+    if (!isFinite(start)) start = 0;
+    var t0 = performance.now();
+    var dur = 420;
+    function frame(t) {
+      var p = Math.min(1, (t - t0) / dur);
+      var eased = 1 - Math.pow(1 - p, 3);
+      n.textContent = (start + (target - start) * eased).toFixed(decimals);
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  document.querySelectorAll("[data-count]").forEach(function (el) {
+    var target = parseFloat(el.getAttribute("data-count"));
+    var decimals = parseInt(el.getAttribute("data-decimals") || "2", 10);
+    if (!isFinite(target)) return;
+    if (reduced || staticShot) {
+      var n = el.querySelector(".n") || el;
+      n.textContent = target.toFixed(decimals);
+      return;
+    }
+    var n = el.querySelector(".n") || el;
+    n.textContent = (0).toFixed(decimals);
+    animateNumber(el, target, decimals);
+  });
+
+  var cfgEl = document.getElementById("live-config");
+  if (!cfgEl || staticShot) return;
+  var CFG;
+  try { CFG = JSON.parse(cfgEl.textContent); } catch (err) { return; }
+  if (!CFG || !CFG.holdings) return;
+
+  var H = CFG.holdings;
+  var lastOk = 0;
+  var lastUsd = H.snapshot_usd;
+  var online = false;
+  var timer = null;
+  var LS = "chief-paper-usd-v1";
+
+  function $(sel) { return document.querySelector(sel); }
+  function $all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+  function fmtUsd(n, sign) {
+    var abs = Math.abs(n).toFixed(2);
+    if (sign) {
+      if (n > 0.004) return "+$" + abs;
+      if (n < -0.004) return "-$" + abs;
+      return "$" + abs;
+    }
+    return "$" + abs;
+  }
+
+  function seedPoints() {
+    var pts = (CFG.history || []).map(function (p) {
+      return { t: p.t, usd: p.usd, src: "seed", label: p.label || "" };
+    });
+    try {
+      var saved = JSON.parse(localStorage.getItem(LS) || "[]");
+      if (Array.isArray(saved)) {
+        var minT = pts.length ? pts[pts.length - 1].t : 0;
+        saved.forEach(function (p) {
+          if (p && isFinite(p.t) && isFinite(p.usd) && p.t > minT) pts.push({ t: p.t, usd: p.usd, src: "live" });
+        });
+      }
+    } catch (err) {}
+    pts.sort(function (a, b) { return a.t - b.t; });
+    return pts;
+  }
+
+  function saveLivePoints(pts) {
+    try {
+      var live = pts.filter(function (p) { return p.src === "live"; }).slice(-300);
+      localStorage.setItem(LS, JSON.stringify(live));
+    } catch (err) {}
+  }
+
+  function drawChart(pts) {
+    var mount = $("#chart-mount");
+    if (!mount || !pts.length) return;
+    var start = H.start_usd;
+    var w = 358, h = 168, padL = 8, padR = 10, padT = 16, padB = 10;
+    var iw = w - padL - padR, ih = h - padT - padB;
+    var vals = pts.map(function (p) { return p.usd; }).concat([start]);
+    var ymin = Math.min.apply(null, vals) - 2;
+    var ymax = Math.max.apply(null, vals) + 2;
+    if (ymax - ymin < 5) {
+      var mid = (ymax + ymin) / 2;
+      ymin = mid - 2.5;
+      ymax = mid + 2.5;
+    }
+    function xy(i, v) {
+      var x = pts.length === 1 ? padL : padL + iw * (i / (pts.length - 1));
+      var y = padT + ih * (1 - (v - ymin) / (ymax - ymin));
+      return [x, y];
+    }
+    var coords = pts.map(function (p, i) { return xy(i, p.usd); });
+    var last = coords[coords.length - 1];
+    var first = coords[0];
+    var baseY = xy(0, start)[1];
+    var down = pts[pts.length - 1].usd < start;
+    var stroke = down ? "#EF4444" : "#22C55E";
+    var area = first[0].toFixed(2) + "," + baseY.toFixed(2) + " " +
+      coords.map(function (c) { return c[0].toFixed(2) + "," + c[1].toFixed(2); }).join(" ") + " " +
+      last[0].toFixed(2) + "," + baseY.toFixed(2);
+    var d = "M " + coords.map(function (c) { return c[0].toFixed(2) + " " + c[1].toFixed(2); }).join(" L ");
+    var len = 0;
+    for (var i = 1; i < coords.length; i++) {
+      var dx = coords[i][0] - coords[i - 1][0], dy = coords[i][1] - coords[i - 1][1];
+      len += Math.hypot(dx, dy);
+    }
+    if (len < 1) len = 1;
+    mount.innerHTML =
+      '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="' + h + '" role="img" aria-label="PAPER portfolio in USD">' +
+      '<defs><linearGradient id="portFill" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + stroke + '" stop-opacity="0.28"/>' +
+      '<stop offset="100%" stop-color="' + stroke + '" stop-opacity="0"/>' +
+      '</linearGradient></defs>' +
+      '<line class="baseline" x1="' + padL + '" y1="' + baseY.toFixed(2) + '" x2="' + (w - padR) + '" y2="' + baseY.toFixed(2) + '" />' +
+      '<polygon class="area" points="' + area + '" fill="url(#portFill)"/>' +
+      '<path class="line" d="' + d + '" stroke="' + stroke + '" style="--len:' + len.toFixed(1) + '"/>' +
+      '<circle class="cap" cx="' + last[0].toFixed(2) + '" cy="' + last[1].toFixed(2) + '" r="6" stroke="' + stroke + '"/>' +
+      '</svg>';
+
+    var valEl = document.querySelector("[data-chart-value]");
+    if (valEl) valEl.textContent = pts[pts.length - 1].usd.toFixed(2);
+    var cap = document.querySelector(".hist-cap");
+    if (cap) {
+      var liveN = pts.filter(function (p) { return p.src === "live"; }).length;
+      cap.textContent = liveN ? ("live · " + pts.length + " points") : ("history building · " + pts.length + " real points");
+    }
+  }
+
+  var points = seedPoints();
+  drawChart(points);
+
+  function flash(dir) {
+    var el = $(".balance");
+    if (!el) return;
+    el.classList.remove("flash-up", "flash-down");
+    void el.offsetWidth;
+    el.classList.add(dir === "up" ? "flash-up" : "flash-down");
+    setTimeout(function () { el.classList.remove("flash-up", "flash-down"); }, 700);
+  }
+
+  function applyTotals(usd, solPx, tokenPrices, meta) {
+    if (!isFinite(usd) || !isFinite(solPx) || solPx <= 0) return;
+    var solEq = usd / solPx;
+    var pnl = usd - H.start_usd;
+    var mult = usd / H.start_usd;
+    var bal = $(".balance");
+    if (bal) {
+      if (isFinite(lastUsd) && Math.abs(usd - lastUsd) >= 0.005) {
+        flash(usd > lastUsd ? "up" : "down");
+        animateNumber(bal, usd, 2);
+      } else {
+        var n = bal.querySelector(".n");
+        if (n) n.textContent = usd.toFixed(2);
+      }
+    }
+    lastUsd = usd;
+    var solEl = $("[data-sol]");
+    if (solEl) solEl.textContent = "≈" + solEq.toFixed(2) + " SOL";
+    var pill = $("[data-pnl]");
+    if (pill) {
+      pill.textContent = fmtUsd(pnl, true);
+      pill.classList.remove("pos", "neg", "flat");
+      pill.classList.add(pnl > 0.004 ? "pos" : pnl < -0.004 ? "neg" : "flat");
+      pill.setAttribute("title", "vs $" + H.start_usd.toFixed(0) + " start (" + H.start_asof + ")");
+    }
+    var multEl = $("[data-mult]");
+    if (multEl) multEl.textContent = (Math.round(mult * 1000) / 1000).toFixed(3) + "x";
+    var recap = $("[data-recap-now]");
+    if (recap) {
+      recap.textContent = fmtUsd(usd, false);
+      recap.classList.remove("pos", "neg");
+      recap.classList.add(pnl >= 0 ? "pos" : "neg");
+    }
+    var recapMult = $("[data-recap-mult]");
+    if (recapMult) recapMult.textContent = (Math.round(mult * 1000) / 1000).toFixed(3) + "x";
+
+    $all("[data-pos]").forEach(function (row) {
+      var ca = (row.getAttribute("data-ca") || "").toLowerCase();
+      var amt = parseFloat(row.getAttribute("data-amount") || "");
+      var cost = parseFloat(row.getAttribute("data-cost-sol") || "");
+      var px = tokenPrices[ca];
+      if (!isFinite(amt) || !isFinite(px) || !isFinite(cost)) return;
+      var val = amt * px;
+      var costUsd = cost * solPx;
+      var pnlU = val - costUsd;
+      var pct = costUsd ? (pnlU / costUsd) * 100 : 0;
+      var valEl = row.querySelector("[data-live-val]");
+      if (valEl) valEl.textContent = "now " + fmtUsd(val, false);
+      var pnlEl = row.querySelector("[data-live-pnl]");
+      if (pnlEl) {
+        pnlEl.textContent = fmtUsd(pnlU, true) + " " + (pct >= 0 ? "+" : "") + pct.toFixed(1) + "%";
+        pnlEl.classList.remove("pos", "neg", "flat");
+        pnlEl.classList.add(pnlU > 0.004 ? "pos" : pnlU < -0.004 ? "neg" : "flat");
+      }
+    });
+
+    if (meta && meta.h1) {
+      Object.keys(meta.h1).forEach(function (sym) {
+        var ch = meta.h1[sym];
+        if (!isFinite(ch)) return;
+        var label = (ch >= 0 ? "+" : "") + ch.toFixed(1) + "%";
+        var sign = Math.abs(ch) < 0.05 ? "flat" : ch > 0 ? "pos" : "neg";
+        $all('[data-tick-symbol="' + sym + '"]').forEach(function (tick) {
+          tick.classList.remove("pos", "neg", "flat");
+          tick.classList.add(sign);
+          var move = tick.querySelector("[data-tick-move]");
+          if (move) move.textContent = label + " 1h";
+        });
+      });
+    }
+
+    var now = Date.now();
+    if (!points.length || Math.abs(usd - points[points.length - 1].usd) >= 0.01 || now - points[points.length - 1].t > 30000) {
+      points.push({ t: now, usd: usd, src: "live" });
+      if (points.length > 320) points = points.slice(0, 2).concat(points.slice(-300));
+      saveLivePoints(points);
+      drawChart(points);
+    } else {
+      points[points.length - 1].usd = usd;
+      points[points.length - 1].t = now;
+      drawChart(points);
+    }
+  }
+
+  function pickBest(pairs) {
+    var best = {};
+    (pairs || []).forEach(function (p) {
+      var addr = p.baseToken && p.baseToken.address;
+      if (!addr || p.priceUsd == null) return;
+      var price = parseFloat(p.priceUsd);
+      if (!isFinite(price) || price <= 0) return;
+      var liq = (p.liquidity && p.liquidity.usd) || 0;
+      var h1 = p.priceChange && p.priceChange.h1;
+      var key = addr.toLowerCase();
+      if (!best[key] || liq > best[key].liq) {
+        best[key] = { price: price, h1: isFinite(h1) ? h1 : null, liq: liq, symbol: (p.baseToken && p.baseToken.symbol) || "" };
+      }
+    });
+    return best;
+  }
+
+  function allCas() {
+    var cas = [H.wsol_ca];
+    (H.tokens || []).forEach(function (t) { if (t.ca) cas.push(t.ca); });
+    (H.watch || []).forEach(function (t) { if (t.ca) cas.push(t.ca); });
+    return cas;
+  }
+
+  function caMap() {
+    var m = {};
+    m[(H.wsol_ca || "").toLowerCase()] = "SOL";
+    (H.tokens || []).concat(H.watch || []).forEach(function (t) {
+      if (t.ca) m[t.ca.toLowerCase()] = t.symbol;
+    });
+    return m;
+  }
+
+  async function fetchDex() {
+    var url = "https://api.dexscreener.com/tokens/v1/solana/" + allCas().join(",");
+    var ctrl = new AbortController();
+    var to = setTimeout(function () { ctrl.abort(); }, 8000);
+    try {
+      var res = await fetch(url, { signal: ctrl.signal, cache: "no-store" });
+      if (!res.ok) throw new Error("dex " + res.status);
+      return pickBest(await res.json());
+    } finally {
+      clearTimeout(to);
+    }
+  }
+
+  async function fetchGecko() {
+    var ids = ["solana"];
+    (H.tokens || []).forEach(function (t) { if (t.coingecko_id && ids.indexOf(t.coingecko_id) < 0) ids.push(t.coingecko_id); });
+    var url = "https://api.coingecko.com/api/v3/simple/price?ids=" + ids.join(",") + "&vs_currencies=usd";
+    var ctrl = new AbortController();
+    var to = setTimeout(function () { ctrl.abort(); }, 8000);
+    try {
+      var res = await fetch(url, { signal: ctrl.signal, cache: "no-store" });
+      if (!res.ok) throw new Error("cg " + res.status);
+      var data = await res.json();
+      var out = {};
+      if (data.solana && data.solana.usd) out[(H.wsol_ca || "").toLowerCase()] = { price: data.solana.usd, h1: null, liq: 0 };
+      (H.tokens || []).forEach(function (t) {
+        var row = t.coingecko_id && data[t.coingecko_id];
+        if (row && row.usd && t.ca) out[t.ca.toLowerCase()] = { price: row.usd, h1: null, liq: 0 };
+      });
+      if (!out[(H.wsol_ca || "").toLowerCase()]) throw new Error("cg missing sol");
+      return out;
+    } finally {
+      clearTimeout(to);
+    }
+  }
+
+  function setStatus(ok, msg) {
+    online = ok;
+    if (ok) lastOk = Date.now();
+    var el = $("[data-live]");
+    var dot = $("[data-livedot]");
+    if (dot) dot.classList.toggle("off", !ok);
+    if (el) el.textContent = msg;
+  }
+
+  function ageText() {
+    if (!lastOk) return "offline · last snapshot " + (H.snapshot_asof || "").replace(" CET", "");
+    if (!online) {
+      var d = new Date(lastOk);
+      var hh = String(d.getHours()).padStart(2, "0");
+      var mm = String(d.getMinutes()).padStart(2, "0");
+      return "offline · last snapshot " + hh + ":" + mm;
+    }
+    var s = Math.max(0, Math.round((Date.now() - lastOk) / 1000));
+    return s < 3 ? "live · updated just now" : "live · updated " + s + "s ago";
+  }
+
+  function totalsFrom(best) {
+    var sol = best[(H.wsol_ca || "").toLowerCase()];
+    if (!sol || !isFinite(sol.price)) throw new Error("no sol");
+    var usd = H.cash_sol * sol.price;
+    var tokenPrices = {};
+    (H.tokens || []).forEach(function (t) {
+      var row = best[(t.ca || "").toLowerCase()];
+      if (!row || !isFinite(row.price)) throw new Error("no px " + t.symbol);
+      tokenPrices[(t.ca || "").toLowerCase()] = row.price;
+      usd += t.amount * row.price;
+    });
+    var h1 = {};
+    var names = caMap();
+    Object.keys(best).forEach(function (k) {
+      var sym = names[k];
+      if (sym && best[k].h1 != null) h1[sym] = best[k].h1;
+    });
+    return { usd: usd, solPx: sol.price, tokenPrices: tokenPrices, h1: h1 };
+  }
+
+  async function poll() {
+    try {
+      var best = await fetchDex();
+      var t = totalsFrom(best);
+      applyTotals(t.usd, t.solPx, t.tokenPrices, { h1: t.h1, src: "dexscreener" });
+      setStatus(true, ageText());
+    } catch (err) {
+      try {
+        var best2 = await fetchGecko();
+        var t2 = totalsFrom(best2);
+        applyTotals(t2.usd, t2.solPx, t2.tokenPrices, { h1: t2.h1, src: "coingecko" });
+        setStatus(true, ageText());
+      } catch (err2) {
+        setStatus(false, ageText());
+      }
+    }
+  }
+
+  setStatus(false, "live · snapshot " + (H.snapshot_asof || ""));
+  poll();
+  timer = setInterval(poll, H.poll_ms || 8000);
+  setInterval(function () {
+    var el = $("[data-live]");
+    if (el) el.textContent = ageText();
+  }, 1000);
+})();
+
+
+  </script>
+</body>
+</html>
