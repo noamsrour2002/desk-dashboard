@@ -1,9 +1,9 @@
 {
   "name": "Desk",
   "short_name": "Desk",
-  "description": "PAPER trading desk status",
+  "description": "PAPER trading desk \u00b7 live",
   "display": "standalone",
-  "background_color": "#F9F9F9",
+  "background_color": "#FAFAF7",
   "theme_color": "#ffffff",
   "start_url": "./",
   "scope": "./",
