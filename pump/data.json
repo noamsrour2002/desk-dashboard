@@ -1,10 +1,10 @@
 {
  "meta": {
   "note": "PAPER only. Seeded from /workspace/desk/data.json holdings whose mint ends in 'pump', plus the pending $PNUT pump limit and the closed $GOAT pump trade. No invented fills.",
-  "updated": "2026-11-22T17:58:00+01:00",
-  "updated_label": "17:58 CET",
+  "updated": "2026-11-22T18:37:00+01:00",
+  "updated_label": "18:37 CET",
   "snapshot_sol_price": 70.33,
-  "snapshot_source": "PAPER after CHILLGUY sell + tiecat buy; cash 0.22 SOL"
+  "snapshot_source": "PAPER after tiecat stop-out; cash 0.94 SOL"
  },
  "paper_trades": [
   {
@@ -13,14 +13,18 @@
    "ca": "8DD2MafxzwHBGk3vwy2EsH3Xap17qin27bQVeo27pump",
    "side": "BUY",
    "order_type": "market",
-   "status": "open",
+   "status": "closed",
    "amount_tokens": 6288119,
    "cost_sol": 1.0,
    "entry_usd": 1.11e-05,
    "stop": "SL -12%",
    "tp": "TP +20%",
    "tag": "PUMP LANE",
-   "note": "Fees 0.011 SOL. Skeptic Buy (on-curve ~55%, top holder 5.4%). Abort on bundle/dev sell/>40% wallet."
+   "note": "Fees 0.011 SOL. Skeptic Buy (on-curve ~55%, top holder 5.4%). Abort on bundle/dev sell/>40% wallet. Stopped out 18:37 CET (-26%); exit fees 0.0083 SOL.",
+   "exit_time": "18:37 CET",
+   "exit_usd": 8.18e-06,
+   "exit_sol": 0.72,
+   "realized_pnl_sol": -0.278
   },
   {
    "time": "13:04 CET",
@@ -83,7 +87,8 @@
    "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE. Sold 17:58 CET (unlocked-LP flag) to fund tiecat; exit fees 0.0108 SOL.",
    "exit_time": "17:58 CET",
    "exit_usd": 0.00681,
-   "realized_pnl_sol": -0.031
+   "realized_pnl_sol": -0.031,
+   "exit_sol": 0.98
   },
   {
    "time": "17:06 CET",
