@@ -50,6 +50,31 @@ a{color:inherit}
 .back:hover{border-color:#111}
 .src-line{font-size:10px;color:var(--muted);margin-top:6px;max-width:220px;margin-left:auto}
 
+.pnl-hero{padding:16px 16px 14px;margin-bottom:12px}
+.pnl-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.pnl-usd{font-weight:800;font-size:clamp(40px, 15vw, 64px);line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.pnl-sol{font-weight:700;font-size:clamp(16px, 5vw, 22px);margin-top:6px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pnl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.pnl-lab{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.pnl-grid b{font-size:12.5px;font-weight:700;display:block;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pnl-sub{display:block;font-size:10px;color:#555;margin-top:1px;font-variant-numeric:tabular-nums}
+.pnl-fresh{font-size:10px;color:var(--muted);margin-top:12px;letter-spacing:.04em}
+@media (min-width:640px){
+  .pnl-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+.pnl-hero.flash-pos{animation:pnlflashg .7s ease}
+.pnl-hero.flash-neg{animation:pnlflashr .7s ease}
+@keyframes pnlflashg{
+  0%{box-shadow:inset 0 0 0 0 rgba(22,163,74,0)}
+  25%{box-shadow:inset 0 0 0 2px rgba(22,163,74,.4);background:#F0FDF4}
+  100%{box-shadow:inset 0 0 0 0 rgba(22,163,74,0);background:var(--card)}
+}
+@keyframes pnlflashr{
+  0%{box-shadow:inset 0 0 0 0 rgba(220,38,38,0)}
+  25%{box-shadow:inset 0 0 0 2px rgba(220,38,38,.35);background:#FEF2F2}
+  100%{box-shadow:inset 0 0 0 0 rgba(220,38,38,0);background:var(--card)}
+}
+
 .tabs{display:flex;gap:4px}
 .tabs button{font:inherit;font-size:9px;letter-spacing:.08em;border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 7px;color:#666;cursor:pointer}
 .tabs button.on{background:#111;color:#fff;border-color:#111}
@@ -127,6 +152,33 @@ a{color:inherit}
         <p class="src-line" id="srcline">live feeds · every 8s</p>
       </div>
     </header>
+
+    <section class="card pnl-hero" id="pnl-hero" aria-live="polite">
+      <div class="pnl-kicker">Paper P&amp;L</div>
+      <div class="pnl-total" id="pnl-total">
+        <div class="pnl-usd flat" id="pnl-usd">—</div>
+        <div class="pnl-sol flat" id="pnl-sol">—</div>
+      </div>
+      <div class="pnl-grid">
+        <div>
+          <div class="pnl-lab">Open unrealized</div>
+          <div id="pnl-open">—</div>
+        </div>
+        <div>
+          <div class="pnl-lab">Realized</div>
+          <div id="pnl-real">—</div>
+        </div>
+        <div>
+          <div class="pnl-lab">SOL invested</div>
+          <div id="pnl-invested">—</div>
+        </div>
+        <div>
+          <div class="pnl-lab">Portfolio value</div>
+          <div id="pnl-value">—</div>
+        </div>
+      </div>
+      <div class="pnl-fresh" id="pnl-fresh">waiting for live prices…</div>
+    </section>
 
     <section class="card" id="paper">
       <div class="chead">
@@ -340,6 +392,62 @@ a{color:inherit}
     return Math.max(0, m / GRAD_USD * 100);
   }
 
+  var QUOTE_OK = { SOL: 1, WSOL: 1, USDC: 1, USDT: 1 };
+  var lastPnlKey = "";
+  var lastPnlSigned = null;
+  var pricesAt = 0;
+
+  function quoteSym(p) {
+    return String((p && p.quoteToken && p.quoteToken.symbol) || "").toUpperCase();
+  }
+  function pairLiq(p) {
+    return (p && p.liquidity) ? (num(p.liquidity.usd) || 0) : 0;
+  }
+  function isPumpfunDex(p) {
+    var d = lc(p && p.dexId);
+    return d === "pumpfun" || d === "pump-fun";
+  }
+  function isValidQuotePair(p, ca) {
+    if (!p || lc(p.chainId) !== "solana") return false;
+    var bt = p.baseToken || {};
+    if (!bt.address) return false;
+    if (ca && lc(bt.address) !== lc(ca)) return false;
+    if (!QUOTE_OK[quoteSym(p)]) return false;
+    if (!isPumpfunDex(p) && pairLiq(p) < 1000) return false;
+    return true;
+  }
+  function pickBestPair(pairs, ca) {
+    var valid = (pairs || []).filter(function (p) { return isValidQuotePair(p, ca); });
+    if (!valid.length) return null;
+    var pool = valid.filter(isPumpfunDex);
+    if (!pool.length) pool = valid;
+    var best = pool[0], bestLiq = pairLiq(best), i, liq;
+    for (i = 1; i < pool.length; i++) {
+      liq = pairLiq(pool[i]);
+      if (liq > bestLiq) { best = pool[i]; bestLiq = liq; }
+    }
+    return best;
+  }
+  function groupPairsByBase(pairs) {
+    var g = {}, i, p, mint, k;
+    for (i = 0; i < (pairs || []).length; i++) {
+      p = pairs[i];
+      if (!p) continue;
+      mint = (p.baseToken || {}).address;
+      if (!mint) continue;
+      k = lc(mint);
+      if (!g[k]) g[k] = [];
+      g[k].push(p);
+    }
+    return g;
+  }
+  function pairsFromDex(payload) {
+    if (!payload) return [];
+    if (Object.prototype.toString.call(payload) === "[object Array]") return payload;
+    if (payload.pairs) return payload.pairs;
+    return [];
+  }
+
   /* ---------- API ingest ---------- */
   function fromPumpFunList(list, hint) {
     (list || []).forEach(function (x) {
@@ -361,35 +469,60 @@ a{color:inherit}
     });
   }
 
+  function upsertFromPair(p, src, includePrice) {
+    if (!p) return;
+    var bt = p.baseToken || {};
+    var mint = bt.address;
+    if (!mint) return;
+    var dex = lc(p.dexId || "");
+    var pumpish = dex === "pumpfun" || dex === "pump-fun" || dex === "pumpswap" || isPumpMint(mint);
+    if (!pumpish) return;
+    var st = null;
+    if (dex === "pumpfun" || dex === "pump-fun") st = "curve";
+    else if (dex === "pumpswap") st = "graduated";
+    else if (isPumpMint(mint) && dex) st = "graduated";
+    var row = {
+      mint: mint,
+      name: bt.name,
+      ticker: bt.symbol,
+      img: p.info && p.info.imageUrl,
+      createdMs: parseTs(p.pairCreatedAt),
+      dex: p.dexId,
+      stage: st,
+      src: src || "dexscreener"
+    };
+    if (includePrice) {
+      row.mcap = num(p.marketCap != null ? p.marketCap : p.fdv);
+      row.price = num(p.priceUsd);
+      row.liq = p.liquidity ? num(p.liquidity.usd) : null;
+      row.vol = p.volume ? num(p.volume.h1 != null ? p.volume.h1 : p.volume.h6 || p.volume.h24) : null;
+      row.vol24 = p.volume ? num(p.volume.h24) : null;
+      row.chgH1 = p.priceChange ? num(p.priceChange.h1) : null;
+    }
+    upsert(row);
+  }
+
   function fromDexPairs(pairs, src) {
-    (pairs || []).forEach(function (p) {
-      if (!p || lc(p.chainId) !== "solana") return;
-      var bt = p.baseToken || {};
-      var mint = bt.address;
-      if (!mint) return;
-      var dex = lc(p.dexId || "");
-      var pumpish = dex === "pumpfun" || dex === "pumpswap" || isPumpMint(mint);
-      if (!pumpish) return;
-      var st = (dex === "pumpfun") ? "curve" : (dex === "pumpswap" || dex === "raydium" || dex === "meteora" ? "graduated" : (isPumpMint(mint) ? null : null));
-      if (dex === "pumpfun") st = "curve";
-      else if (dex === "pumpswap") st = "graduated";
-      else if (isPumpMint(mint) && dex) st = "graduated";
-      upsert({
-        mint: mint,
-        name: bt.name,
-        ticker: bt.symbol,
-        img: p.info && p.info.imageUrl,
-        mcap: num(p.marketCap != null ? p.marketCap : p.fdv),
-        price: num(p.priceUsd),
-        liq: p.liquidity ? num(p.liquidity.usd) : null,
-        vol: p.volume ? num(p.volume.h1 != null ? p.volume.h1 : p.volume.h6 || p.volume.h24) : null,
-        vol24: p.volume ? num(p.volume.h24) : null,
-        chgH1: p.priceChange ? num(p.priceChange.h1) : null,
-        createdMs: parseTs(p.pairCreatedAt),
-        dex: p.dexId,
-        stage: st,
-        src: src || "dexscreener"
-      });
+    var g = groupPairsByBase(pairs);
+    Object.keys(g).forEach(function (k) {
+      var group = g[k];
+      var ca = (group[0].baseToken || {}).address;
+      var best = pickBestPair(group, ca);
+      if (best) {
+        upsertFromPair(best, src, true);
+        return;
+      }
+      var i, p, dex, mint;
+      for (i = 0; i < group.length; i++) {
+        p = group[i];
+        if (!p || lc(p.chainId) !== "solana") continue;
+        mint = (p.baseToken || {}).address;
+        dex = lc(p.dexId || "");
+        if (dex === "pumpfun" || dex === "pump-fun" || dex === "pumpswap" || isPumpMint(mint)) {
+          upsertFromPair(p, src, false);
+          break;
+        }
+      }
     });
   }
 
@@ -439,22 +572,30 @@ a{color:inherit}
     });
   }
 
-  function enrichFromDexTokens(pairs) {
+  function considerSolPair(p) {
+    if (!p || (p.chainId && lc(p.chainId) !== "solana")) return;
+    var bt = p.baseToken || {}, qt = p.quoteToken || {};
+    var qsym = String(qt.symbol || "").toUpperCase();
+    var bsym = String(bt.symbol || "").toUpperCase();
+    var liq = pairLiq(p);
+    var px = null, quality = 0;
+    if ((lc(bt.address) === lc(WSOL) || bsym === "SOL" || bsym === "WSOL") && (qsym === "USDC" || qsym === "USDT")) {
+      px = num(p.priceUsd);
+      quality = 2;
+    } else if ((lc(qt.address) === lc(WSOL) || qsym === "SOL" || qsym === "WSOL") && p.priceNative && p.priceUsd) {
+      px = num(p.priceUsd) / num(p.priceNative);
+      quality = 1;
+    }
+    if (px && isFinite(px) && px > 1 && px < 10000 &&
+        (solUsd == null || quality > (solUsd.quality || 0) || (quality === (solUsd.quality || 0) && liq > (solUsd.liq || 0)))) {
+      solUsd = { price: px, liq: liq, quality: quality };
+    }
+  }
+
+  function enrichFromDexTokens(payload) {
+    var pairs = pairsFromDex(payload);
     fromDexPairs(pairs, "dexscreener-tokens");
-    // SOL
-    (pairs || []).forEach(function (p) {
-      if (!p) return;
-      var bt = p.baseToken || {}, qt = p.quoteToken || {};
-      if (bt.address === WSOL && p.priceUsd) {
-        var liq = p.liquidity ? num(p.liquidity.usd) : 0;
-        if (solUsd == null || liq > (solUsd.liq || 0)) solUsd = { price: num(p.priceUsd), liq: liq };
-      }
-      if (qt.address === WSOL && p.priceNative && p.priceUsd) {
-        var px = num(p.priceUsd) / num(p.priceNative);
-        var liq2 = p.liquidity ? num(p.liquidity.usd) : 0;
-        if (px && isFinite(px) && (solUsd == null || liq2 > (solUsd.liq || 0))) solUsd = { price: px, liq: liq2 };
-      }
-    });
+    (pairs || []).forEach(considerSolPair);
   }
 
   /* ---------- rug flags (throttled) ---------- */
@@ -685,6 +826,94 @@ a{color:inherit}
   function solPrice() {
     return (solUsd && solUsd.price) || book.solHint || null;
   }
+  function livePriceOf(t) {
+    if (!t || !t.ca) return null;
+    var c = coins[lc(t.ca)];
+    return c ? num(c.price) : null;
+  }
+  /* Unrealized SOL = cost_sol * (live_usd / entry_usd - 1). Same price drives the row %. */
+  function unrealizedSol(t) {
+    var cost = num(t.cost_sol);
+    var entry = num(t.entry_usd);
+    var px = livePriceOf(t);
+    if (cost == null || entry == null || entry === 0 || px == null) return null;
+    return cost * (px / entry - 1);
+  }
+  function fmtHeroUsd(n) {
+    if (n == null || !isFinite(n)) return "—";
+    var sign = n < 0 ? "−" : (n > 0.004 ? "+" : "");
+    return sign + "$" + Math.abs(n).toFixed(2);
+  }
+  function summarizeBook() {
+    var realized = 0, invested = 0, unreal = 0, openN = 0;
+    var openReady = true;
+    (book.trades || []).forEach(function (t) {
+      var st = (t.status || "").toLowerCase();
+      if (st === "closed") {
+        var r = num(t.realized_pnl_sol);
+        if (r != null) realized += r;
+      } else if (st === "open") {
+        openN += 1;
+        var c = num(t.cost_sol);
+        if (c != null) invested += c;
+        var u = unrealizedSol(t);
+        if (u == null) openReady = false;
+        else unreal += u;
+      }
+    });
+    return {
+      realized: realized,
+      invested: invested,
+      unreal: openReady ? unreal : null,
+      total: openReady ? unreal + realized : null,
+      value: openReady ? invested + unreal : null,
+      openN: openN,
+      ready: openReady
+    };
+  }
+  function renderPnlFresh() {
+    var el = $("pnl-fresh");
+    if (!el) return;
+    if (!pricesAt) { el.textContent = "waiting for live prices…"; return; }
+    var sec = Math.max(0, Math.round((Date.now() - pricesAt) / 1000));
+    el.textContent = "updated " + sec + "s ago";
+  }
+  function sideLine(sol, pxSol, signed) {
+    if (sol == null || !isFinite(sol)) return "—";
+    var cls = signed ? tone(sol) : "";
+    var usd = (pxSol != null) ? (signed ? fmtHeroUsd(sol * pxSol) : fmtUsd(sol * pxSol)) : "";
+    return '<b class="' + cls + '">' + (signed ? fmtSol(sol) : (sol.toFixed(3) + " SOL")) + "</b>" +
+      (usd ? '<span class="pnl-sub">' + usd + "</span>" : "");
+  }
+  function renderPnl() {
+    var hero = $("pnl-hero");
+    if (!hero) return;
+    var s = summarizeBook();
+    var pxSol = solPrice();
+    var usd = (s.total != null && pxSol) ? s.total * pxSol : null;
+    var ready = s.ready && s.total != null;
+    $("pnl-usd").textContent = ready ? fmtHeroUsd(usd) : "—";
+    $("pnl-sol").textContent = ready ? fmtSol(s.total) : "—";
+    var tcls = ready ? tone(s.total) : "flat";
+    $("pnl-usd").className = "pnl-usd " + tcls;
+    $("pnl-sol").className = "pnl-sol " + tcls;
+    $("pnl-open").innerHTML = sideLine(s.unreal, pxSol, true);
+    $("pnl-real").innerHTML = sideLine(s.realized, pxSol, true);
+    $("pnl-invested").innerHTML = sideLine(s.invested, pxSol, false);
+    $("pnl-value").innerHTML = sideLine(s.value, pxSol, false);
+    var key = ready ? (usd != null ? usd.toFixed(2) : "") + ":" + s.total.toFixed(6) : "";
+    if (lastPnlKey && key && key !== lastPnlKey) {
+      var up = (s.total != null && lastPnlSigned != null) ? s.total >= lastPnlSigned : true;
+      hero.classList.remove("flash-pos", "flash-neg");
+      void hero.offsetWidth;
+      hero.classList.add(up ? "flash-pos" : "flash-neg");
+    }
+    if (key) {
+      lastPnlKey = key;
+      lastPnlSigned = s.total;
+    }
+    renderPnlFresh();
+  }
 
   function renderPaper() {
     var el = $("paper-list");
@@ -692,7 +921,7 @@ a{color:inherit}
     if (!trades.length) { el.innerHTML = emptyState("no pump paper trades in data.json"); $("paper-sum").textContent = ""; return; }
     var pxSol = solPrice();
     var html = "";
-    var openN = 0, openPnl = 0;
+    var openN = 0, openPnl = 0, openReady = true;
     trades.forEach(function (t) {
       var mint = t.ca;
       var c = coins[lc(mint)] || { mint: mint, ticker: t.symbol, name: t.symbol };
@@ -717,26 +946,20 @@ a{color:inherit}
         openN += 1;
         var amt = num(t.amount_tokens);
         var cost = num(t.cost_sol);
-        var valueSol = null, pnlSol = null, pnlUsd = null, valueUsd = null, costUsd = null;
-        if (amt != null && c.price != null && pxSol) {
-          valueUsd = amt * c.price;
-          valueSol = valueUsd / pxSol;
-        } else if (amt != null && c.price != null) {
-          valueUsd = amt * c.price;
-        }
-        if (cost != null && pxSol) costUsd = cost * pxSol;
-        if (valueSol != null && cost != null) pnlSol = valueSol - cost;
-        if (valueUsd != null && costUsd != null) pnlUsd = valueUsd - costUsd;
-        if (pnlSol != null) openPnl += pnlSol;
+        var pnlSol = unrealizedSol(t);
+        var px = livePriceOf(t);
+        if (pnlSol == null) openReady = false;
+        else openPnl += pnlSol;
         var pct = (pnlSol != null && cost) ? (pnlSol / cost) * 100 : null;
-        right = '<div class="pr-pnl ' + tone(pnlSol != null ? pnlSol : pnlUsd) + '">' +
+        var valueUsd = (cost != null && pnlSol != null && pxSol) ? (cost + pnlSol) * pxSol : (amt != null && px != null ? amt * px : null);
+        right = '<div class="pr-pnl ' + tone(pnlSol) + '">' +
           (pnlSol != null ? fmtSol(pnlSol) : "…") +
           "<small>" + (pct != null ? fmtPct(pct) : "") +
           (valueUsd != null ? " · " + fmtUsd(valueUsd) : "") +
           "</small></div>";
         mid = (cost != null ? cost + " SOL" : "—") +
           (amt != null ? " · " + amt.toLocaleString("en-US") + " tok" : "") +
-          (c.price != null ? " · " + fmtUsd(c.price, 5) : "") +
+          (px != null ? " · " + fmtUsd(px, 5) : "") +
           " · " + (t.time || "");
       }
       html += '<div class="coin">' +
@@ -754,7 +977,7 @@ a{color:inherit}
     });
     el.innerHTML = html;
     var sum = openN + " open";
-    if (openN && solPrice()) sum += " · " + fmtSol(openPnl) + " live";
+    if (openN && openReady) sum += " · " + fmtSol(openPnl) + " live";
     $("paper-sum").textContent = sum;
   }
 
@@ -779,6 +1002,7 @@ a{color:inherit}
 
   function render() {
     renderStatus();
+    renderPnl();
     renderPaper();
     renderNear();
     renderLaunch();
@@ -823,9 +1047,9 @@ a{color:inherit}
       });
       /* enrich unique mints via DexScreener tokens endpoint */
       var mints = {};
-      allCoins().forEach(function (c) { if (c.mint) mints[c.mint] = 1; });
+      mints[WSOL] = 1; /* first so the 4-chunk cap cannot drop SOL */
       bookMints().forEach(function (m) { mints[m] = 1; });
-      mints[WSOL] = 1;
+      allCoins().forEach(function (c) { if (c.mint) mints[c.mint] = 1; });
       var ids = Object.keys(mints);
       var chunks = [];
       for (var i = 0; i < ids.length; i += 30) chunks.push(ids.slice(i, i + 30));
@@ -838,9 +1062,30 @@ a{color:inherit}
         tr.forEach(function (r) {
           if (r.ok) { any = true; enrichFromDexTokens(r.value); }
         });
-        if (any) ok.push("dexscreener-tokens");
-        sources = uniqueSrc(ok);
-        liveOk = ok.length > 0;
+        /* Full pair lists per paper mint: /latest/dex/tokens/<ca> returns
+           many pairs, including bogus high-liq quotes (e.g. mihao/MM at $69).
+           Fetch one mint at a time so a 30-pair cap cannot hide the real SOL pair.
+           Dedicated WSOL fetch supplies the live SOL/USD rate. */
+        var bookJobs = bookMints().map(function (ca) {
+          return settled("dex-book", timedFetch(DEX + "/latest/dex/tokens/" + ca, 8000));
+        });
+        bookJobs.push(settled("dex-sol", timedFetch(DEX + "/tokens/v1/solana/" + WSOL, 8000)));
+        return Promise.all(bookJobs).then(function (br) {
+          var bookOk = false, solOk = false;
+          br.forEach(function (r) {
+            if (!r.ok) return;
+            enrichFromDexTokens(r.value);
+            if (r.label === "dex-sol") solOk = true;
+            else bookOk = true;
+          });
+          if (any) ok.push("dexscreener-tokens");
+          if (bookOk) ok.push("dexscreener-tokens");
+          if (bookOk || any) pricesAt = Date.now();
+          sources = uniqueSrc(ok);
+          liveOk = ok.length > 0;
+          return true;
+        });
+      }).then(function () {
         /* drop stale feed coins not in this tick and not in the paper book */
         var keep = {};
         bookMints().forEach(function (m) { keep[lc(m)] = 1; });
@@ -918,6 +1163,7 @@ a{color:inherit}
 
   loadBook().then(function () { render(); return refresh(); });
   setInterval(refresh, POLL_MS);
+  setInterval(renderPnlFresh, 1000);
 })();
   </script>
 </body>
