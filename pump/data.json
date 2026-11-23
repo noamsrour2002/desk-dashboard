@@ -2,12 +2,30 @@
   "meta": {
     "note": "PAPER only. Seeded from /workspace/desk/data.json holdings whose mint ends in 'pump', plus the pending $PNUT pump limit and the closed $GOAT pump trade. No invented fills.",
     "updated": "2026-11-23T17:17:00+01:00",
-    "updated_label": "17:52 CET",
+    "updated_label": "20:12 CET",
     "snapshot_sol_price": 70.33,
     "snapshot_source": "PAPER after ALOD buy; cash 0.57 SOL",
-    "cash_sol": 1.61
+    "cash_sol": 1.47
   },
   "paper_trades": [
+    {
+      "time": "19:47 CET Nov 23",
+      "symbol": "EXE",
+      "ca": "6tCcpic2iBoWhEhh1xygUDikimHD1zjiZgRGHAxbWexe",
+      "side": "BUY",
+      "amount_tokens": 1891704,
+      "cost_sol": 0.2,
+      "entry_usd": 7.68e-06,
+      "stop": "SL -20%",
+      "tp": "TP +50-100%",
+      "tag": "HARDER LANE",
+      "status": "closed",
+      "exit_time": "20:12 CET Nov 23",
+      "exit_usd": 2.75e-06,
+      "realized_sol": -0.132,
+      "realized_usd": -9.66,
+      "note": "Resting limit (MC<=$8.4K) on Skeptic WAIT caught a falling knife; Scout kill at 20:10 and exited. Fees 0.0030 + 0.0017 SOL."
+    },
     {
       "time": "17:17 CET Nov 23",
       "symbol": "$ALOD",
