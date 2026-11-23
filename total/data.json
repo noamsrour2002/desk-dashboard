@@ -1,0 +1,233 @@
+{
+ "meta": {
+  "label": "PAPER",
+  "built": "2026-11-23T17:20:14+01:00",
+  "built_label": "17:20 CET Mon 23 Nov",
+  "note": "All paper money: Co-Invest HL PAPER perps + tradepaperapp PAPER (pump lane + spot). Spot excludes any mint present in pump/data.json; main holdings cash ignored (same account cash is in pump bucket).",
+  "sources": {
+   "perps": "total/mcp_state.json (Co-Invest get_portfolio + view_open_orders) 2026-11-23T17:18:42+01:00",
+   "pump": "pump/data.json 2026-11-23T17:17:00+01:00",
+   "spot": "data.json holdings 17:06 CET"
+  }
+ },
+ "start": {
+  "perps_usd": 10000.0,
+  "paper_sol": 10.0,
+  "paper_sol_price": 70.76,
+  "paper_usd": 707.6,
+  "total_usd": 10707.6
+ },
+ "perps": {
+  "venue": "Co-Invest \u00b7 Hyperliquid PAPER",
+  "equity": 9833.7997272,
+  "available": 9833.7997272,
+  "margin_used": 0.0,
+  "start_equity": 10000.0,
+  "asof": "2026-11-23T16:18:42.856Z",
+  "positions": []
+ },
+ "pump": {
+  "cash_sol": 0.57,
+  "cash_asof": "2026-11-23T17:17:00+01:00",
+  "coins": [
+   {
+    "symbol": "ALOD",
+    "ca": "HGdv1YMmPJTAreL78XLeusxrTLhoVJc9MZSwucMBpump",
+    "amount": 1500000.0,
+    "cost_sol": 0.2,
+    "entry_usd": 9.7e-06,
+    "tp": "TP +50-100%",
+    "sl": "SL -20%",
+    "tag": "HARDER LANE",
+    "time": "17:17 CET Nov 23"
+   },
+   {
+    "symbol": "FARTCOIN",
+    "ca": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+    "amount": 268.0,
+    "cost_sol": 0.304,
+    "entry_usd": 0.0784,
+    "tp": "TP +20%",
+    "sl": "SL -12%",
+    "tag": "LUNCH TEST",
+    "time": "13:04 CET"
+   },
+   {
+    "symbol": "VINE",
+    "ca": "6AJcP7wuLwmRYLBNbi825wgguaPsWzPBEHcHndpRpump",
+    "amount": 7614.0,
+    "cost_sol": 1.011,
+    "entry_usd": 0.00911,
+    "tp": "TP +20%",
+    "sl": "SL -12%",
+    "tag": "TEST MODE",
+    "time": "15:36 CET"
+   },
+   {
+    "symbol": "neet",
+    "ca": "Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump",
+    "amount": 3072.0,
+    "cost_sol": 1.011,
+    "entry_usd": 0.0226,
+    "tp": "TP +20%",
+    "sl": "SL -12%",
+    "tag": "TEST MODE",
+    "time": "15:36 CET"
+   },
+   {
+    "symbol": "mihao",
+    "ca": "4CxjZyMNoF1p6eXHXHv1TWpS2X47CuUmLwtGe18spump",
+    "amount": 8100.0,
+    "cost_sol": 1.011,
+    "entry_usd": 0.0086,
+    "tp": "TP +20%",
+    "sl": "SL -12%",
+    "tag": "TEST MODE",
+    "time": "17:06 CET"
+   }
+  ]
+ },
+ "spot": {
+  "coins": [
+   {
+    "symbol": "BONK",
+    "ca": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+    "amount": 8400000.0,
+    "cost_sol": 0.251
+   },
+   {
+    "symbol": "WIF",
+    "ca": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+    "amount": 145.0,
+    "cost_sol": 0.251
+   },
+   {
+    "symbol": "POPCAT",
+    "ca": "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "amount": 1712.0,
+    "cost_sol": 0.608
+   },
+   {
+    "symbol": "MEW",
+    "ca": "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
+    "amount": 73300.0,
+    "cost_sol": 0.304
+   },
+   {
+    "symbol": "USELESS",
+    "ca": "Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk",
+    "amount": 852.0,
+    "cost_sol": 1.011
+   },
+   {
+    "symbol": "MOODENG",
+    "ca": "ED5nyyWEzpPPiWimP8vYm7sD7TD3LAt3Q3gRTWHzPJBY",
+    "amount": 2800.0,
+    "cost_sol": 1.011
+   },
+   {
+    "symbol": "SPX",
+    "ca": "J3NKxxXZcnNiMjKw9hYb2K4LUxgwB6t1FtPtQVsv3KFr",
+    "amount": 245.0,
+    "cost_sol": 1.011
+   },
+   {
+    "symbol": "CLAUDIA",
+    "ca": "2j5SaS7xy776qCBpyPQbZjyQSAtKiFgrwjfErthnW2ZM",
+    "amount": 6007.0,
+    "cost_sol": 1.011
+   }
+  ],
+  "asof": "17:06 CET"
+ },
+ "pending": [
+  {
+   "venue": "perps",
+   "id": 210835,
+   "coin": "BTC",
+   "side": "buy",
+   "size": 0.24583,
+   "limit": 62200.0,
+   "tp": 64400,
+   "sl": 61000,
+   "leverage": 15,
+   "placed_at": "2026-11-23T15:55:43.770Z"
+  },
+  {
+   "venue": "perps",
+   "id": 210838,
+   "coin": "SOL",
+   "side": "buy",
+   "size": 227.0,
+   "limit": 73.0,
+   "tp": 76.4,
+   "sl": 71.7,
+   "leverage": 15,
+   "placed_at": "2026-11-23T15:55:43.921Z"
+  },
+  {
+   "venue": "pump",
+   "coin": "PNUT",
+   "ca": "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
+   "side": "buy",
+   "size_sol": 0.4,
+   "limit": 0.02555,
+   "tp": "TP $0.02655",
+   "sl": "SL $0.02490",
+   "placed_at": "14:18 CET",
+   "note": "Limit pending; not filled yet. Skeptic Buy."
+  },
+  {
+   "venue": "spot",
+   "coin": "BOME",
+   "ca": "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
+   "side": "buy",
+   "size_sol": 0.45,
+   "limit": 0.000452,
+   "tp": "TP $0.000481",
+   "sl": "SL $0.000434",
+   "placed_at": "14:18 CET",
+   "note": "Limit pending; not filled yet. Skeptic Buy."
+  }
+ ],
+ "snapshot": {
+  "asof": "2026-11-23T17:20:14+01:00",
+  "sol_usd": 75.125,
+  "btc_usd": 62733.5,
+  "source": "hyperliquid allMids + dexscreener tokens",
+  "perps_usd": 9833.8,
+  "pump_cash_usd": 42.82,
+  "pump_coins_usd": 250.79,
+  "spot_usd": 390.35,
+  "total_usd": 10517.76,
+  "total_sol": 140.004,
+  "pnl_usd": -189.84,
+  "coin_marks": {
+   "HGdv1YMmPJTAreL78XLeusxrTLhoVJc9MZSwucMBpump": 9.35e-06,
+   "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump": 0.08707,
+   "6AJcP7wuLwmRYLBNbi825wgguaPsWzPBEHcHndpRpump": 0.009323,
+   "Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump": 0.02455,
+   "4CxjZyMNoF1p6eXHXHv1TWpS2X47CuUmLwtGe18spump": 0.008275,
+   "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263": 2.271e-06,
+   "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm": 0.1316,
+   "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr": 0.02717,
+   "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5": 0.0003023,
+   "Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk": 0.08551,
+   "ED5nyyWEzpPPiWimP8vYm7sD7TD3LAt3Q3gRTWHzPJBY": 0.02709,
+   "J3NKxxXZcnNiMjKw9hYb2K4LUxgwB6t1FtPtQVsv3KFr": 0.2938,
+   "2j5SaS7xy776qCBpyPQbZjyQSAtKiFgrwjfErthnW2ZM": 0.01046
+  },
+  "missing_marks": []
+ },
+ "history": [
+  {
+   "t": "2026-11-22T12:30:00+01:00",
+   "usd": 10707.6,
+   "note": "start: $10,000 perps + 10 SOL paper"
+  },
+  {
+   "t": "2026-11-23T17:20:14+01:00",
+   "usd": 10517.76
+  }
+ ]
+}
