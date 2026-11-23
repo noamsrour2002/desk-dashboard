@@ -1,263 +1,267 @@
 {
- "meta": {
-  "note": "PAPER only. Seeded from /workspace/desk/data.json holdings whose mint ends in 'pump', plus the pending $PNUT pump limit and the closed $GOAT pump trade. No invented fills.",
-  "updated": "2026-11-23T17:17:00+01:00",
-  "updated_label": "17:17 CET",
-  "snapshot_sol_price": 70.33,
-  "snapshot_source": "PAPER after ALOD buy; cash 0.57 SOL",
-  "cash_sol": 0.57
- },
- "paper_trades": [
-  {
-   "time": "17:17 CET Nov 23",
-   "symbol": "$ALOD",
-   "ca": "HGdv1YMmPJTAreL78XLeusxrTLhoVJc9MZSwucMBpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "open",
-   "amount_tokens": 1500000,
-   "cost_sol": 0.2,
-   "entry_usd": 9.7e-06,
-   "stop": "SL -20%",
-   "tp": "TP +50-100%",
-   "tag": "HARDER LANE",
-   "note": "Fees 0.003 SOL. Skeptic Buy. ~1.5M tokens (app rounded). Time-stop ~17:47."
+  "meta": {
+    "note": "PAPER only. Seeded from /workspace/desk/data.json holdings whose mint ends in 'pump', plus the pending $PNUT pump limit and the closed $GOAT pump trade. No invented fills.",
+    "updated": "2026-11-23T17:17:00+01:00",
+    "updated_label": "17:52 CET",
+    "snapshot_sol_price": 70.33,
+    "snapshot_source": "PAPER after ALOD buy; cash 0.57 SOL",
+    "cash_sol": 1.61
   },
-  {
-   "time": "18:45 CET",
-   "symbol": "$Law",
-   "ca": "HayDm9KSrWMB2WcEwqtqdx9t8v3xHpi9EVNJZjrpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "closed",
-   "amount_tokens": 3201553,
-   "cost_sol": 0.2,
-   "entry_usd": 4.35e-06,
-   "stop": "SL -20%",
-   "tp": "TP +50-100%",
-   "tag": "HARDER LANE",
-   "note": "Fees 0.003 SOL. Skeptic Buy. Abort on bundle/dev sell/>40% wallet. Time-stop ~30m.",
-   "exit_time": "19:19 CET",
-   "exit_usd": 3.77e-06,
-   "exit_sol": 0.169,
-   "realized_sol": -0.032,
-   "realized_usd": -2.25,
-   "exit_reason": "Time stop ~30m (-11.3% at check)"
-  },
-  {
-   "time": "18:45 CET",
-   "symbol": "$LIQI",
-   "ca": "H3HdNyikGdLFvHc4fNH5r1PBw42BujVNf17vDGxcpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "closed",
-   "amount_tokens": 2255253,
-   "cost_sol": 0.2,
-   "entry_usd": 6.18e-06,
-   "stop": "SL -20%",
-   "tp": "TP +50-100%",
-   "tag": "HARDER LANE",
-   "note": "Fees 0.003 SOL. Skeptic Buy. Abort on bundle/dev sell/>40% wallet. Time-stop ~30m. Stopped out 18:51 CET (-68% dump); exit fees 0.0016 SOL.",
-   "exit_time": "18:51 CET",
-   "exit_usd": 1.98e-06,
-   "exit_sol": 0.062,
-   "realized_pnl_sol": -0.139
-  },
-  {
-   "time": "17:58 CET",
-   "symbol": "$tiecat",
-   "ca": "8DD2MafxzwHBGk3vwy2EsH3Xap17qin27bQVeo27pump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "closed",
-   "amount_tokens": 6288119,
-   "cost_sol": 1.0,
-   "entry_usd": 1.11e-05,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "PUMP LANE",
-   "note": "Fees 0.011 SOL. Skeptic Buy (on-curve ~55%, top holder 5.4%). Abort on bundle/dev sell/>40% wallet. Stopped out 18:37 CET (-26%); exit fees 0.0083 SOL.",
-   "exit_time": "18:37 CET",
-   "exit_usd": 8.18e-06,
-   "exit_sol": 0.72,
-   "realized_pnl_sol": -0.278
-  },
-  {
-   "time": "13:04 CET",
-   "symbol": "$FARTCOIN",
-   "ca": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "open",
-   "amount_tokens": 268,
-   "cost_sol": 0.304,
-   "entry_usd": 0.0784,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "LUNCH TEST",
-   "note": "Fees 0.004 SOL."
-  },
-  {
-   "time": "15:36 CET",
-   "symbol": "$VINE",
-   "ca": "6AJcP7wuLwmRYLBNbi825wgguaPsWzPBEHcHndpRpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "open",
-   "amount_tokens": 7614,
-   "cost_sol": 1.011,
-   "entry_usd": 0.00911,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "TEST MODE",
-   "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE."
-  },
-  {
-   "time": "15:36 CET",
-   "symbol": "$neet",
-   "ca": "Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "open",
-   "amount_tokens": 3072,
-   "cost_sol": 1.011,
-   "entry_usd": 0.0226,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "TEST MODE",
-   "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE."
-  },
-  {
-   "time": "15:36 CET",
-   "symbol": "$CHILLGUY",
-   "ca": "Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "closed",
-   "amount_tokens": 10169,
-   "cost_sol": 1.011,
-   "entry_usd": 0.00683,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "TEST MODE",
-   "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE. Sold 17:58 CET (unlocked-LP flag) to fund tiecat; exit fees 0.0108 SOL.",
-   "exit_time": "17:58 CET",
-   "exit_usd": 0.00681,
-   "realized_pnl_sol": -0.031,
-   "exit_sol": 0.97
-  },
-  {
-   "time": "17:06 CET",
-   "symbol": "$mihao",
-   "ca": "4CxjZyMNoF1p6eXHXHv1TWpS2X47CuUmLwtGe18spump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "open",
-   "amount_tokens": 8100,
-   "cost_sol": 1.011,
-   "entry_usd": 0.0086,
-   "stop": "SL -12%",
-   "tp": "TP +20%",
-   "tag": "TEST MODE",
-   "note": "Fees 0.011 SOL. Skeptic Buy. Liq thin $349k at entry."
-  },
-  {
-   "time": "14:18 CET",
-   "symbol": "$PNUT",
-   "ca": "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
-   "side": "BUY",
-   "order_type": "limit",
-   "status": "pending",
-   "size_sol": 0.4,
-   "entry_usd": 0.02555,
-   "stop": "SL $0.02490",
-   "tp": "TP $0.02655",
-   "tag": "STRATEGY",
-   "note": "Limit pending; not filled yet. Skeptic Buy."
-  },
-  {
-   "time": "13:32 CET",
-   "symbol": "$GOAT",
-   "ca": "CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump",
-   "side": "BUY",
-   "order_type": "market",
-   "status": "closed",
-   "amount_tokens": 2655,
-   "cost_sol": 0.405,
-   "entry_usd": 0.0105,
-   "exit_time": "17:06 CET",
-   "exit_sol": 0.3901,
-   "exit_usd": 0.0105,
-   "realized_pnl_sol": -0.011,
-   "tag": "AFTERNOON TEST",
-   "note": "Sold 17:06 CET to fund CLAUDIA+mihao. Fees 0.0050 SOL."
-  }
- ],
- "equity_history": [
-  {
-   "t": "2026-11-22T13:04:00+01:00",
-   "sol": 4.6129,
-   "usd": 324.43
-  },
-  {
-   "t": "2026-11-22T13:32:00+01:00",
-   "sol": 4.6129,
-   "usd": 324.43
-  },
-  {
-   "t": "2026-11-22T15:36:00+01:00",
-   "sol": 4.6129,
-   "usd": 324.43
-  },
-  {
-   "t": "2026-11-22T15:36:01+01:00",
-   "sol": 4.6129,
-   "usd": 324.43
-  },
-  {
-   "t": "2026-11-22T15:36:02+01:00",
-   "sol": 4.6129,
-   "usd": 324.43
-  },
-  {
-   "t": "2026-11-22T17:06:00+01:00",
-   "sol": 4.598,
-   "usd": 323.38
-  },
-  {
-   "t": "2026-11-22T17:06:01+01:00",
-   "sol": 4.598,
-   "usd": 323.38
-  },
-  {
-   "t": "2026-11-22T17:58:00+01:00",
-   "sol": 4.557,
-   "usd": 320.49
-  },
-  {
-   "t": "2026-11-22T17:58:01+01:00",
-   "sol": 4.557,
-   "usd": 320.49
-  },
-  {
-   "t": "2026-11-22T18:37:00+01:00",
-   "sol": 4.277,
-   "usd": 300.8
-  },
-  {
-   "t": "2026-11-22T18:45:00+01:00",
-   "sol": 4.277,
-   "usd": 300.8
-  },
-  {
-   "t": "2026-11-22T18:45:01+01:00",
-   "sol": 4.277,
-   "usd": 300.8
-  },
-  {
-   "t": "2026-11-22T18:51:00+01:00",
-   "sol": 4.1364,
-   "usd": 290.91
-  }
- ]
+  "paper_trades": [
+    {
+      "time": "17:17 CET Nov 23",
+      "symbol": "$ALOD",
+      "ca": "HGdv1YMmPJTAreL78XLeusxrTLhoVJc9MZSwucMBpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 1500000,
+      "cost_sol": 0.2,
+      "entry_usd": 9.7e-06,
+      "stop": "SL -20%",
+      "tp": "TP +50-100%",
+      "tag": "HARDER LANE",
+      "note": "Fees 0.003 SOL. Skeptic Buy. ~1.5M tokens (app rounded). Time-stop ~17:47. | Exit: dev wallet moved full bag off-wallet + time stop; sold 1,529,992 @ $0.0000115, +0.033 SOL after 0.0034 fees",
+      "exit_time": "17:52 CET Nov 23",
+      "exit_usd": 1.15e-05,
+      "realized_sol": 0.033,
+      "realized_usd": 2.43
+    },
+    {
+      "time": "18:45 CET",
+      "symbol": "$Law",
+      "ca": "HayDm9KSrWMB2WcEwqtqdx9t8v3xHpi9EVNJZjrpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 3201553,
+      "cost_sol": 0.2,
+      "entry_usd": 4.35e-06,
+      "stop": "SL -20%",
+      "tp": "TP +50-100%",
+      "tag": "HARDER LANE",
+      "note": "Fees 0.003 SOL. Skeptic Buy. Abort on bundle/dev sell/>40% wallet. Time-stop ~30m.",
+      "exit_time": "19:19 CET",
+      "exit_usd": 3.77e-06,
+      "exit_sol": 0.169,
+      "realized_sol": -0.032,
+      "realized_usd": -2.25,
+      "exit_reason": "Time stop ~30m (-11.3% at check)"
+    },
+    {
+      "time": "18:45 CET",
+      "symbol": "$LIQI",
+      "ca": "H3HdNyikGdLFvHc4fNH5r1PBw42BujVNf17vDGxcpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 2255253,
+      "cost_sol": 0.2,
+      "entry_usd": 6.18e-06,
+      "stop": "SL -20%",
+      "tp": "TP +50-100%",
+      "tag": "HARDER LANE",
+      "note": "Fees 0.003 SOL. Skeptic Buy. Abort on bundle/dev sell/>40% wallet. Time-stop ~30m. Stopped out 18:51 CET (-68% dump); exit fees 0.0016 SOL.",
+      "exit_time": "18:51 CET",
+      "exit_usd": 1.98e-06,
+      "exit_sol": 0.062,
+      "realized_pnl_sol": -0.139
+    },
+    {
+      "time": "17:58 CET",
+      "symbol": "$tiecat",
+      "ca": "8DD2MafxzwHBGk3vwy2EsH3Xap17qin27bQVeo27pump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 6288119,
+      "cost_sol": 1.0,
+      "entry_usd": 1.11e-05,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "PUMP LANE",
+      "note": "Fees 0.011 SOL. Skeptic Buy (on-curve ~55%, top holder 5.4%). Abort on bundle/dev sell/>40% wallet. Stopped out 18:37 CET (-26%); exit fees 0.0083 SOL.",
+      "exit_time": "18:37 CET",
+      "exit_usd": 8.18e-06,
+      "exit_sol": 0.72,
+      "realized_pnl_sol": -0.278
+    },
+    {
+      "time": "13:04 CET",
+      "symbol": "$FARTCOIN",
+      "ca": "9BB6NFEcjBCtnNLFko2FqVQBq8HHM13kCyYcdQbgpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "open",
+      "amount_tokens": 268,
+      "cost_sol": 0.304,
+      "entry_usd": 0.0784,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "LUNCH TEST",
+      "note": "Fees 0.004 SOL."
+    },
+    {
+      "time": "15:36 CET",
+      "symbol": "$VINE",
+      "ca": "6AJcP7wuLwmRYLBNbi825wgguaPsWzPBEHcHndpRpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "open",
+      "amount_tokens": 7614,
+      "cost_sol": 1.011,
+      "entry_usd": 0.00911,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "TEST MODE",
+      "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE."
+    },
+    {
+      "time": "15:36 CET",
+      "symbol": "$neet",
+      "ca": "Ce2gx9KGXJ6C9Mp5b5x1sn9Mg87JwEbrQby4Zqo3pump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "open",
+      "amount_tokens": 3072,
+      "cost_sol": 1.011,
+      "entry_usd": 0.0226,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "TEST MODE",
+      "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE."
+    },
+    {
+      "time": "15:36 CET",
+      "symbol": "$CHILLGUY",
+      "ca": "Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 10169,
+      "cost_sol": 1.011,
+      "entry_usd": 0.00683,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "TEST MODE",
+      "note": "Fees 0.011 SOL. Skeptic Buy TEST MODE. Sold 17:58 CET (unlocked-LP flag) to fund tiecat; exit fees 0.0108 SOL.",
+      "exit_time": "17:58 CET",
+      "exit_usd": 0.00681,
+      "realized_pnl_sol": -0.031,
+      "exit_sol": 0.97
+    },
+    {
+      "time": "17:06 CET",
+      "symbol": "$mihao",
+      "ca": "4CxjZyMNoF1p6eXHXHv1TWpS2X47CuUmLwtGe18spump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "open",
+      "amount_tokens": 8100,
+      "cost_sol": 1.011,
+      "entry_usd": 0.0086,
+      "stop": "SL -12%",
+      "tp": "TP +20%",
+      "tag": "TEST MODE",
+      "note": "Fees 0.011 SOL. Skeptic Buy. Liq thin $349k at entry."
+    },
+    {
+      "time": "14:18 CET",
+      "symbol": "$PNUT",
+      "ca": "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
+      "side": "BUY",
+      "order_type": "limit",
+      "status": "pending",
+      "size_sol": 0.4,
+      "entry_usd": 0.02555,
+      "stop": "SL $0.02490",
+      "tp": "TP $0.02655",
+      "tag": "STRATEGY",
+      "note": "Limit pending; not filled yet. Skeptic Buy."
+    },
+    {
+      "time": "13:32 CET",
+      "symbol": "$GOAT",
+      "ca": "CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump",
+      "side": "BUY",
+      "order_type": "market",
+      "status": "closed",
+      "amount_tokens": 2655,
+      "cost_sol": 0.405,
+      "entry_usd": 0.0105,
+      "exit_time": "17:06 CET",
+      "exit_sol": 0.3901,
+      "exit_usd": 0.0105,
+      "realized_pnl_sol": -0.011,
+      "tag": "AFTERNOON TEST",
+      "note": "Sold 17:06 CET to fund CLAUDIA+mihao. Fees 0.0050 SOL."
+    }
+  ],
+  "equity_history": [
+    {
+      "t": "2026-11-22T13:04:00+01:00",
+      "sol": 4.6129,
+      "usd": 324.43
+    },
+    {
+      "t": "2026-11-22T13:32:00+01:00",
+      "sol": 4.6129,
+      "usd": 324.43
+    },
+    {
+      "t": "2026-11-22T15:36:00+01:00",
+      "sol": 4.6129,
+      "usd": 324.43
+    },
+    {
+      "t": "2026-11-22T15:36:01+01:00",
+      "sol": 4.6129,
+      "usd": 324.43
+    },
+    {
+      "t": "2026-11-22T15:36:02+01:00",
+      "sol": 4.6129,
+      "usd": 324.43
+    },
+    {
+      "t": "2026-11-22T17:06:00+01:00",
+      "sol": 4.598,
+      "usd": 323.38
+    },
+    {
+      "t": "2026-11-22T17:06:01+01:00",
+      "sol": 4.598,
+      "usd": 323.38
+    },
+    {
+      "t": "2026-11-22T17:58:00+01:00",
+      "sol": 4.557,
+      "usd": 320.49
+    },
+    {
+      "t": "2026-11-22T17:58:01+01:00",
+      "sol": 4.557,
+      "usd": 320.49
+    },
+    {
+      "t": "2026-11-22T18:37:00+01:00",
+      "sol": 4.277,
+      "usd": 300.8
+    },
+    {
+      "t": "2026-11-22T18:45:00+01:00",
+      "sol": 4.277,
+      "usd": 300.8
+    },
+    {
+      "t": "2026-11-22T18:45:01+01:00",
+      "sol": 4.277,
+      "usd": 300.8
+    },
+    {
+      "t": "2026-11-22T18:51:00+01:00",
+      "sol": 4.1364,
+      "usd": 290.91
+    }
+  ]
 }
